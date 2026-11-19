@@ -17,7 +17,6 @@
        1. TOKENS DE DISEÑO EN 3 NIVELES (PRIMITIVOS -> SEMÁNTICOS -> COMPONENTE)
        ========================================================================== */
     :root {
-      /* Nivel 1: Primitivos */
       --space-1: 4px;
       --space-2: 8px;
       --space-3: 12px;
@@ -37,7 +36,6 @@
       --apple-teal: #30B0C7;
       --apple-pink: #FF2D55;
 
-      /* Nivel 2: Semánticos (Modo Claro Apple System Grouped) */
       --bg-canvas: #F2F2F7;
       --bg-surface: #FFFFFF;
       --bg-surface-elevated: #FFFFFF;
@@ -59,7 +57,6 @@
       --danger: #E02424;
       --danger-soft: rgba(255, 59, 48, 0.13);
 
-      /* Nivel 3: Liquid Glass & Componentes */
       --glass-bg: rgba(255, 255, 255, 0.72);
       --glass-card-bg: rgba(255, 255, 255, 0.84);
       --glass-border: rgba(255, 255, 255, 0.78);
@@ -99,7 +96,6 @@
       --glass-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.55);
     }
 
-    /* Intensidades de Apple Liquid Glass */
     [data-glass="subtle"] {
       --glass-bg: rgba(255, 255, 255, 0.86);
       --glass-card-bg: rgba(255, 255, 255, 0.94);
@@ -121,9 +117,6 @@
       --glass-specular: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
     }
 
-    /* ==========================================================================
-       2. RESET Y BASE TÁCTIL
-       ========================================================================== */
     *, *::before, *::after {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -180,9 +173,6 @@
       }
     }
 
-    /* ==========================================================================
-       3. CAPA AMBIENTAL ÓPTICA (NO INTERCEPTA TOQUES)
-       ========================================================================== */
     .ambient-orb-layer {
       position: fixed;
       inset: 0;
@@ -213,9 +203,6 @@
       filter: blur(70px);
     }
 
-    /* ==========================================================================
-       4. ENCABEZADO SUPERIOR LIQUID GLASS (STICKY Z-30 SIN COLISIONES)
-       ========================================================================== */
     .app-header {
       position: sticky;
       top: 0;
@@ -323,9 +310,6 @@
       box-shadow: 0 4px 14px -4px rgba(0, 122, 255, 0.45);
     }
 
-    /* ==========================================================================
-       5. CONTENEDOR PRINCIPAL (Z-10 DEBAJO DEL HEADER)
-       ========================================================================== */
     .app-main {
       position: relative;
       z-index: 10;
@@ -368,9 +352,6 @@
       flex-shrink: 0;
     }
 
-    /* ==========================================================================
-       6. TARJETAS SUPERFICIE Y LIQUID GLASS
-       ========================================================================== */
     .surface-card {
       background: var(--bg-surface);
       border-radius: var(--card-radius);
@@ -442,7 +423,6 @@
       color: var(--text-secondary);
     }
 
-    /* 3 Mini-cajas concéntricas dentro del héroe */
     .hero-triple-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -475,7 +455,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Progreso lineal estilo Apple Salud */
     .progress-track {
       width: 100%;
       height: 8px;
@@ -492,7 +471,6 @@
       transition: width 0.35s var(--ease-spring), background-color 0.2s ease;
     }
 
-    /* Secciones y encabezados */
     .section-head {
       display: flex;
       align-items: center;
@@ -519,7 +497,6 @@
       padding: 0 4px;
     }
 
-    /* Botones rápidos de 1 toque */
     .quick-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -579,7 +556,6 @@
       flex-shrink: 0;
     }
 
-    /* Carrusel / Grid de cuentas estilo Apple Wallet */
     .accounts-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -627,7 +603,6 @@
       letter-spacing: -0.02em;
     }
 
-    /* Listas agrupadas Apple con separador alineado al texto */
     .grouped-list {
       background: var(--bg-surface);
       border-radius: var(--card-radius);
@@ -692,7 +667,6 @@
       flex-shrink: 0;
     }
 
-    /* Círculo interactivo estilo Apple Recordatorios */
     .reminder-check-btn {
       width: 44px;
       height: 44px;
@@ -720,9 +694,6 @@
       color: #FFFFFF;
     }
 
-    /* ==========================================================================
-       7. BARRA INFERIOR FLOTANTE LIQUID GLASS (Z-40)
-       ========================================================================== */
     .bottom-dock-wrap {
       position: fixed;
       left: 0;
@@ -770,9 +741,6 @@
       color: var(--accent);
     }
 
-    /* ==========================================================================
-       8. CONTROLES DE FORMULARIO, FILTROS Y BOTTOM SHEETS (Z-50)
-       ========================================================================== */
     .filter-scroll {
       display: flex;
       gap: 7px;
@@ -936,7 +904,6 @@
       gap: 6px;
     }
 
-    /* Toast flotante con Deshacer (Z-60) */
     .toast-banner {
       position: fixed;
       left: 50%;
@@ -971,7 +938,6 @@
       min-height: 32px;
     }
 
-    /* Gráfica de barras 7 días */
     .bars-7d {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -1036,13 +1002,11 @@
   </style>
 </head>
 <body>
-  <!-- Capa óptica ambiental (no intercepta toques) -->
   <div class="ambient-orb-layer" aria-hidden="true">
     <div class="ambient-orb-1"></div>
     <div class="ambient-orb-2"></div>
   </div>
 
-  <!-- Encabezado Liquid Glass Sticky (z-30) -->
   <header class="app-header">
     <div class="header-inner">
       <div class="brand-cluster">
@@ -1079,7 +1043,6 @@
     </div>
   </header>
 
-  <!-- Contenido Principal (z-10) -->
   <main class="app-main">
     <div class="greeting-row">
       <div>
@@ -1092,7 +1055,6 @@
     <div id="viewContainer"></div>
   </main>
 
-  <!-- Barra Flotante Inferior Liquid Glass (z-40) -->
   <nav class="bottom-dock-wrap" aria-label="Navegación principal">
     <div class="bottom-dock">
       <button type="button" class="nav-tab-btn active tap-spring" data-action="nav-tab" data-tab="overview">
@@ -1143,15 +1105,10 @@
     </div>
   </nav>
 
-  <!-- Toast Flotante con Deshacer (z-60) -->
   <div class="toast-banner" id="toastBanner" role="status" aria-live="polite">
     <span id="toastMessage">Listo</span>
     <button type="button" class="toast-undo-btn" id="toastUndoBtn" data-action="undo-last" style="display:none;">Deshacer</button>
   </div>
-
-  <!-- ==========================================================================
-       BOTTOM SHEETS (MODALES DESLIZABLES ESTILO APPLE HIG, Z-50)
-       ========================================================================== -->
 
   <!-- 1. Modal Registrar / Editar Movimiento -->
   <div class="sheet-backdrop" id="txModalBackdrop" data-action="close-backdrop">
@@ -1213,7 +1170,7 @@
     </div>
   </div>
 
-  <!-- 2. Modal Crear / Editar Proyecto y Apartar Dinero -->
+  <!-- 2. Modal Proyecto / Hucha -->
   <div class="sheet-backdrop" id="projectModalBackdrop" data-action="close-backdrop">
     <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
       <div class="sheet-grabber"></div>
@@ -1244,7 +1201,7 @@
     </div>
   </div>
 
-  <!-- 3. Modal Pago Fijo (Recordatorio) -->
+  <!-- 3. Modal Pago Fijo -->
   <div class="sheet-backdrop" id="reminderModalBackdrop" data-action="close-backdrop">
     <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
       <div class="sheet-grabber"></div>
@@ -1279,7 +1236,7 @@
     </div>
   </div>
 
-  <!-- 4. Modal Categoría Personalizada -->
+  <!-- 4. Modal Categoría -->
   <div class="sheet-backdrop" id="categoryModalBackdrop" data-action="close-backdrop">
     <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle">
       <div class="sheet-grabber"></div>
@@ -1388,9 +1345,6 @@
     (function () {
       'use strict';
 
-      /* ========================================================================
-         UTILIDADES DE SEGURIDAD, FORMATO Y ALMACENAMIENTO OFFLINE-FIRST
-         ======================================================================== */
       const STORAGE_KEY = 'mi_dinero_ssot_v2';
       const BACKUP_KEY = 'mi_dinero_backup_previo';
       const memoryStorage = {};
@@ -1497,9 +1451,6 @@
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
       }
 
-      /* ========================================================================
-         ESTADO INICIAL (SSOT OFFLINE-FIRST CON EJEMPLO REALISTA)
-         ======================================================================== */
       function createDefaultState() {
         const today = todayISO();
         const yesterday = offsetDateISO(1);
@@ -1521,7 +1472,6 @@
           { id: 'cat_ingreso', name: 'Ganancia / Ingreso', tag: 'IN', color: '#34C759', nature: 'ingreso', monthlyBudget: 0 }
         ];
 
-        // Movimientos cuya suma exacta coincide con el saldo de cada cuenta
         const transactions = [
           { id: 'tx_init_1', type: 'income', amount: 356000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_efectivo', toAccountId: null, note: 'Base inicial Efectivo', date: yesterday, isOpening: true },
           { id: 'tx_init_2', type: 'income', amount: 850000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_nequi', toAccountId: null, note: 'Base inicial Nequi', date: yesterday, isOpening: true },
@@ -1570,9 +1520,6 @@
         };
       }
 
-      /* ========================================================================
-         CONTROLADOR DE ESTADO Y MOTOR CONTABLE (SSOT)
-         ======================================================================== */
       const App = {
         state: null,
         activeTab: 'overview',
@@ -1630,7 +1577,6 @@
         },
 
         ensureAccountLedgerConsistencyOnLoad() {
-          // Garantiza que cada cuenta tenga respaldo contable exacto en el libro mayor
           const computed = {};
           this.state.accounts.forEach((a) => { computed[a.id] = 0; });
           this.state.transactions.forEach((tx) => {
@@ -1817,9 +1763,6 @@
           }
         },
 
-        /* ======================================================================
-           EVENTOS GLOBALES POR DELEGACIÓN (100% COMPATIBLE MÓVIL / SANDBOX)
-           ====================================================================== */
         bindGlobalEvents() {
           document.addEventListener('click', (e) => {
             const target = e.target.closest('[data-action]');
@@ -2028,9 +1971,6 @@
           document.querySelectorAll('.sheet-backdrop').forEach((el) => el.classList.remove('open'));
         },
 
-        /* ======================================================================
-           LÓGICA DE MOVIMIENTOS, PAGOS FIJOS Y PROYECTOS
-           ====================================================================== */
         openTxModal(type, editId) {
           const backdrop = document.getElementById('txModalBackdrop');
           const catSel = document.getElementById('txCategorySelect');
@@ -2173,7 +2113,6 @@
           if (!tx) return;
           this.captureUndo('Eliminar movimiento');
           this.state.transactions = this.state.transactions.filter((t) => t.id !== txId);
-          // Sincronización bidireccional si pertenecía a un pago fijo
           this.state.reminders.forEach((r) => {
             if (r.lastTxId === txId) {
               r.paidThisCycle = false;
@@ -2240,7 +2179,6 @@
             this.render();
             this.showToast(`Pagado: ${rem.title}`, true);
           } else {
-            // Al desmarcar, elimina exactamente el movimiento asociado (lastTxId) y restaura la cuenta
             if (rem.lastTxId) {
               this.state.transactions = this.state.transactions.filter((t) => t.id !== rem.lastTxId);
             }
@@ -2319,9 +2257,6 @@
           this.showToast('Pago fijo eliminado', true);
         },
 
-        /* ======================================================================
-           PROYECTOS / HUCHAS (REGLA 1: RESERVA VIRTUAL SOBRE CUENTAS REALES)
-           ====================================================================== */
         openProjectModal(projId) {
           if (projId) {
             const p = this.state.projects.find((x) => x.id === projId);
@@ -2397,9 +2332,6 @@
           this.showToast('Proyecto eliminado (fondos liberados)', true);
         },
 
-        /* ======================================================================
-           CRUD DE PERSONALIZACIÓN (CATEGORÍAS, CUENTAS, BOTONES, PERFIL, RESPALDOS)
-           ====================================================================== */
         openCategoryModal(catId) {
           if (catId) {
             const c = this.state.categories.find((x) => x.id === catId);
@@ -2631,8 +2563,7 @@
               tx.type === 'expense' ? -Math.abs(tx.amount) : Math.abs(tx.amount)
             ]);
           });
-          const csv = '﻿' + rows.map((r) => r.join(',')).join('
-');
+          const csv = '\uFEFF' + rows.map((r) => r.join(',')).join('\n');
           this.downloadBlob(csv, `Mi_dinero_${todayISO()}.csv`, 'text/csv;charset=utf-8;');
           this.showToast('Excel CSV descargado', false);
         },
@@ -2662,7 +2593,6 @@
                 this.showToast('Archivo JSON inválido o incompleto', false);
                 return;
               }
-              // Guardar respaldo automático previo antes de reemplazar
               safeSetStorage(BACKUP_KEY, JSON.stringify(this.state));
               this.state = parsed;
               this.ensureCycleReset();
@@ -2708,9 +2638,6 @@
           setTimeout(() => URL.revokeObjectURL(url), 1500);
         },
 
-        /* ======================================================================
-           RENDERIZADO DE INTERFAZ (APPLE HIG + ANTI-AI DESIGN)
-           ====================================================================== */
         renderHeaderAndNav() {
           const s = this.state.settings;
           const avatar = document.getElementById('headerAvatar');
@@ -2852,7 +2779,6 @@
             : `<div class="grouped-list">${visibleTxs.map((tx) => this.renderTxRow(tx, false)).join('')}</div>`;
 
           return `
-            <!-- Héroe Principal Liquid Glass: Saldo Disponible Real -->
             <section class="liquid-card" aria-label="Saldo Disponible Real">
               <div class="card-header-line">
                 <span class="card-eyebrow">Saldo Disponible Real (Libre Hoy)</span>
@@ -2876,7 +2802,6 @@
               </div>
             </section>
 
-            <!-- Tarjeta Ganancia Diaria -->
             <section class="surface-card" aria-label="Ganancia Diaria">
               <div class="card-header-line">
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -2920,7 +2845,6 @@
               </div>
             </section>
 
-            <!-- Botones Rápidos 1 Toque -->
             <div class="section-head">
               <h2 class="section-title">Botones rápidos de 1 toque</h2>
               <button type="button" class="link-btn" data-action="nav-tab" data-tab="settings">
@@ -2930,21 +2854,18 @@
             </div>
             <div class="quick-grid">${quickHtml}</div>
 
-            <!-- Cuentas / Bolsillos -->
             <div class="section-head">
               <h2 class="section-title">Cuentas y Bolsillos</h2>
               <button type="button" class="link-btn" data-action="open-tx-modal" data-type="transfer">Transferir</button>
             </div>
             <div class="accounts-grid">${accountsHtml}</div>
 
-            <!-- Recordatorios de Pagos Fijos -->
             <div class="section-head">
               <h2 class="section-title">Pagos Fijos del Ciclo</h2>
               <button type="button" class="link-btn" data-action="open-reminder-modal">+ Nuevo fijo</button>
             </div>
             ${remindersHtml}
 
-            <!-- Últimos Movimientos -->
             <div class="section-head">
               <h2 class="section-title">Últimos movimientos</h2>
               <button type="button" class="link-btn" data-action="nav-tab" data-tab="movements">Ver todos</button>
@@ -3090,7 +3011,6 @@
                 `;
               }).join('');
 
-          // Presupuestos mensuales por categoría
           const now = new Date();
           const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
           const budgetsHtml = this.state.categories
@@ -3166,7 +3086,6 @@
 
           const hormigaPct = monthExpense > 0 ? Math.round((hormigaTotal / monthExpense) * 100) : 0;
 
-          // Curva últimos 7 días
           const days = [];
           let maxVal = 1;
           for (let i = 6; i >= 0; i--) {
@@ -3310,7 +3229,6 @@
           `).join('');
 
           return `
-            <!-- 1. Perfil, Meta Diaria y Día de Corte -->
             <section class="surface-card">
               <h2 class="section-title" style="margin-bottom:12px;">1. Perfil y Reglas Financieras</h2>
               <form id="profileSettingsForm">
@@ -3330,7 +3248,6 @@
               </form>
             </section>
 
-            <!-- 2. Colores, Tema y Liquid Glass -->
             <section class="surface-card">
               <h2 class="section-title" style="margin-bottom:12px;">2. Apariencia y Apple Liquid Glass</h2>
               <div class="form-group">
@@ -3359,28 +3276,24 @@
               </div>
             </section>
 
-            <!-- 3. Categorías Personalizables -->
             <div class="section-head">
               <h2 class="section-title">3. Categorías y Topes</h2>
               <button type="button" class="link-btn" data-action="open-category-modal">+ Nueva</button>
             </div>
             <div class="grouped-list">${catsHtml}</div>
 
-            <!-- 4. Cuentas / Bolsillos -->
             <div class="section-head">
               <h2 class="section-title">4. Cuentas y Bolsillos</h2>
               <button type="button" class="link-btn" data-action="open-account-modal">+ Nueva</button>
             </div>
             <div class="grouped-list">${accsHtml}</div>
 
-            <!-- 5. Botones Rápidos 1-Toque -->
             <div class="section-head">
               <h2 class="section-title">5. Botones Rápidos 1 Toque</h2>
               <button type="button" class="link-btn" data-action="open-qb-modal">+ Nuevo</button>
             </div>
             <div class="grouped-list">${qbsHtml}</div>
 
-            <!-- 6. Respaldos, Excel, Offline PWA y Auditoría -->
             <section class="surface-card">
               <div class="card-header-line">
                 <h2 class="section-title">6. Datos, Respaldo y Modo Offline</h2>
