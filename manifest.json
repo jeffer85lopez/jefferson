@@ -1,7 +1,7 @@
 {
   "name": "Mi dinero — Finanzas Personales",
   "short_name": "Mi dinero",
-  "description": "Organizador profesional de finanzas personales, gastos hormiga, ganancia diaria, proyectos y pagos fijos 100% offline.",
+  "description": "Organizador de finanzas personales 100% offline: cuentas, gastos hormiga, ganancia diaria, proyectos, pagos fijos editables y notificaciones inteligentes.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -15,10 +15,22 @@
   ],
   "icons": [
     {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "./icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

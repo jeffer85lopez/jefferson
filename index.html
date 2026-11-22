@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Mi dinero — Finanzas Personales</title>
-  <meta name="description" content="Organizador profesional de finanzas personales, gastos hormiga, ganancia diaria, proyectos y pagos fijos 100% offline." />
+  <meta name="description" content="Organizador profesional de finanzas personales, gastos hormiga, ganancia diaria, proyectos, pagos fijos editables y alertas inteligentes 100% offline." />
   <meta name="theme-color" content="#F2F2F7" id="metaThemeColor" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" id="appleStatusBar" />
   <meta name="apple-mobile-web-app-title" content="Mi dinero" />
   <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
-  <link rel="apple-touch-icon" href="./icon.svg" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
   <style>
     /* ==========================================================================
        1. TOKENS DE DISEÑO EN 3 NIVELES (PRIMITIVOS -> SEMÁNTICOS -> COMPONENTE)
@@ -259,6 +261,8 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       color: var(--text-primary);
     }
 
@@ -283,6 +287,7 @@
     }
 
     .icon-circle-btn {
+      position: relative;
       width: 40px;
       height: 40px;
       min-width: 40px;
@@ -293,6 +298,27 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .notif-badge-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .notif-badge-dot.visible {
+      display: inline-flex;
     }
 
     .primary-pill-btn {
@@ -342,7 +368,8 @@
     }
 
     .cut-pill {
-      padding: 6px 11px;
+      padding: 7px 11px;
+      min-height: 32px;
       border-radius: var(--radius-full);
       background: var(--accent-soft);
       color: var(--accent);
@@ -350,6 +377,8 @@
       font-weight: 600;
       white-space: nowrap;
       flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
     }
 
     .surface-card {
@@ -493,7 +522,7 @@
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      min-height: 32px;
+      min-height: 36px;
       padding: 0 4px;
     }
 
@@ -570,6 +599,8 @@
       padding: 13px;
       position: relative;
       overflow: hidden;
+      text-align: left;
+      width: 100%;
     }
 
     .account-accent-bar {
@@ -615,7 +646,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 11px;
+      gap: 10px;
       padding: 12px 14px;
       position: relative;
     }
@@ -624,7 +655,7 @@
       content: "";
       position: absolute;
       top: 0;
-      left: 58px;
+      left: 56px;
       right: 0;
       height: 0.5px;
       background: var(--separator);
@@ -663,8 +694,21 @@
     .list-row-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
+    }
+
+    .mini-action-btn {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      min-height: 34px;
+      border-radius: 50%;
+      background: var(--bg-fill-secondary);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .reminder-check-btn {
@@ -692,6 +736,35 @@
       background: var(--positive);
       border-color: var(--positive);
       color: #FFFFFF;
+    }
+
+    /* Switch iOS para Notificaciones */
+    .ios-switch {
+      position: relative;
+      width: 48px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--bg-fill-secondary);
+      transition: background-color 0.2s var(--ease-spring);
+      flex-shrink: 0;
+    }
+    .ios-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s var(--ease-spring);
+    }
+    .ios-switch.on {
+      background: var(--positive);
+    }
+    .ios-switch.on::after {
+      transform: translateX(20px);
     }
 
     .bottom-dock-wrap {
@@ -836,6 +909,10 @@
       pointer-events: auto;
     }
 
+    #confirmBackdrop {
+      z-index: 55;
+    }
+
     .bottom-sheet {
       width: 100%;
       max-width: 600px;
@@ -882,6 +959,20 @@
       border-radius: 15px;
       background: var(--accent);
       color: var(--accent-contrast);
+      font-size: 15px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-block-danger {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 15px;
+      background: var(--danger);
+      color: #FFFFFF;
       font-size: 15px;
       font-weight: 700;
       display: inline-flex;
@@ -995,9 +1086,21 @@
       background: var(--bg-surface);
       border: 1px dashed var(--separator);
       border-radius: var(--card-radius);
-      padding: 20px 16px;
+      padding: 18px 16px;
       text-align: center;
       margin-bottom: 14px;
+    }
+
+    .setup-banner {
+      background: var(--accent-soft);
+      border: 0.5px solid var(--separator);
+      border-radius: var(--card-radius);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
   </style>
 </head>
@@ -1010,7 +1113,7 @@
   <header class="app-header">
     <div class="header-inner">
       <div class="brand-cluster">
-        <div class="avatar-badge" id="headerAvatar" aria-hidden="true">J</div>
+        <div class="avatar-badge" id="headerAvatar" aria-hidden="true">M</div>
         <div class="brand-title-wrap">
           <span class="brand-title" id="headerBrandTitle">Mi dinero</span>
           <span class="status-dot" id="networkDot" title="Modo Offline-First activo"></span>
@@ -1018,17 +1121,18 @@
       </div>
 
       <div class="header-actions">
+        <button type="button" class="icon-circle-btn tap-spring" data-action="open-notif-center" aria-label="Centro de alertas y notificaciones" title="Notificaciones">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-badge-dot tabular" id="notifBadgeCount">0</span>
+        </button>
+
         <button type="button" class="icon-circle-btn tap-spring" data-action="toggle-privacy" aria-label="Ocultar o mostrar saldos" title="Privacidad">
           <svg id="privacyIconSvg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
             <circle cx="12" cy="12" r="3"/>
-          </svg>
-        </button>
-
-        <button type="button" class="icon-circle-btn tap-spring" data-action="nav-tab" data-tab="settings" aria-label="Ir a Ajustes" title="Ajustes">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
           </svg>
         </button>
 
@@ -1046,10 +1150,10 @@
   <main class="app-main">
     <div class="greeting-row">
       <div>
-        <h1 class="large-title" id="greetingTitle">Hola, Jeffer</h1>
+        <h1 class="large-title" id="greetingTitle">Tu resumen</h1>
         <p class="subtitle-date tabular" id="todayDateLabel">Cargando fecha...</p>
       </div>
-      <span class="cut-pill tabular" id="cycleBadge">Corte día 1</span>
+      <button type="button" class="cut-pill tabular tap-spring" id="cycleBadge" data-action="nav-tab" data-tab="settings" title="Cambiar día de corte">Corte día 1</button>
     </div>
 
     <div id="viewContainer"></div>
@@ -1157,7 +1261,7 @@
 
         <div class="form-group">
           <label class="form-label" for="txNoteInput">Nota o detalle</label>
-          <input type="text" maxlength="80" class="input-field" id="txNoteInput" placeholder="Ej. Empanada y café, Pasaje, Venta..." />
+          <input type="text" maxlength="80" class="input-field" id="txNoteInput" placeholder="Ej. Almuerzo, Pasaje, Pago de trabajo..." />
         </div>
 
         <div class="form-group">
@@ -1182,7 +1286,7 @@
         <input type="hidden" id="projIdInput" />
         <div class="form-group">
           <label class="form-label" for="projNameInput">Nombre del proyecto o meta</label>
-          <input type="text" maxlength="50" class="input-field" id="projNameInput" placeholder="Ej. Viaje a Lima, Fondo Emergencia" required />
+          <input type="text" maxlength="50" class="input-field" id="projNameInput" placeholder="Ej. Fondo de emergencia, Viaje, Compra" required />
         </div>
         <div class="form-group">
           <label class="form-label" for="projTargetInput">Meta total (COP)</label>
@@ -1201,7 +1305,7 @@
     </div>
   </div>
 
-  <!-- 3. Modal Pago Fijo -->
+  <!-- 3. Modal Pago Fijo (Crear y Editar Completo) -->
   <div class="sheet-backdrop" id="reminderModalBackdrop" data-action="close-backdrop">
     <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="reminderModalTitle">
       <div class="sheet-grabber"></div>
@@ -1213,15 +1317,27 @@
         <input type="hidden" id="remIdInput" />
         <div class="form-group">
           <label class="form-label" for="remTitleInput">Concepto del pago</label>
-          <input type="text" maxlength="50" class="input-field" id="remTitleInput" placeholder="Ej. Plan móvil, Gimnasio, Internet" required />
+          <input type="text" maxlength="50" class="input-field" id="remTitleInput" placeholder="Ej. Plan móvil, Arriendo, Gimnasio, Internet" required />
         </div>
         <div class="form-group">
           <label class="form-label" for="remAmountInput">Monto estimado (COP)</label>
           <input type="number" inputmode="numeric" min="100" step="any" class="input-field tabular" id="remAmountInput" required />
         </div>
-        <div class="form-group">
-          <label class="form-label" for="remDueDayInput">Día de vencimiento del mes (1 - 31)</label>
-          <input type="number" inputmode="numeric" min="1" max="31" class="input-field tabular" id="remDueDayInput" value="15" required />
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="form-group">
+            <label class="form-label" for="remDueDayInput">Día de vencimiento (1 - 31)</label>
+            <input type="number" inputmode="numeric" min="1" max="31" class="input-field tabular" id="remDueDayInput" value="15" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="remNotifyDaysSelect">Avisar con anticipación</label>
+            <select class="input-field" id="remNotifyDaysSelect">
+              <option value="0">El mismo día</option>
+              <option value="1">1 día antes</option>
+              <option value="2">2 días antes</option>
+              <option value="3" selected>3 días antes</option>
+              <option value="5">5 días antes</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label" for="remAccountSelect">Cuenta sugerida de pago</label>
@@ -1231,7 +1347,10 @@
           <label class="form-label" for="remCategorySelect">Categoría</label>
           <select class="input-field" id="remCategorySelect"></select>
         </div>
-        <button type="submit" class="btn-block-primary tap-spring">Guardar pago fijo</button>
+        <div style="display:grid;gap:8px;">
+          <button type="submit" class="btn-block-primary tap-spring">Guardar pago fijo</button>
+          <button type="button" class="btn-block-secondary tap-spring" id="remDeleteInsideBtn" data-action="delete-reminder-modal" style="display:none;color:var(--danger);">Eliminar este pago fijo</button>
+        </div>
       </form>
     </div>
   </div>
@@ -1288,11 +1407,11 @@
         <input type="hidden" id="accIdInput" />
         <div class="form-group">
           <label class="form-label" for="accNameInput">Nombre de la cuenta</label>
-          <input type="text" maxlength="32" class="input-field" id="accNameInput" placeholder="Ej. Nequi, Bancolombia, Efectivo" required />
+          <input type="text" maxlength="32" class="input-field" id="accNameInput" placeholder="Ej. Efectivo, Nequi, Bancolombia, Nu" required />
         </div>
         <div class="form-group">
           <label class="form-label" for="accBalanceInput">Saldo real actual (COP)</label>
-          <input type="number" inputmode="numeric" step="any" class="input-field tabular" id="accBalanceInput" required />
+          <input type="number" inputmode="numeric" step="any" class="input-field tabular" id="accBalanceInput" placeholder="Ej. 200000" required />
         </div>
         <div class="form-group">
           <label class="form-label" for="accColorInput">Color identificador</label>
@@ -1315,7 +1434,7 @@
         <input type="hidden" id="qbIdInput" />
         <div class="form-group">
           <label class="form-label" for="qbLabelInput">Nombre del acceso rápido</label>
-          <input type="text" maxlength="28" class="input-field" id="qbLabelInput" placeholder="Ej. Café / Mecato, Pasaje Bus" required />
+          <input type="text" maxlength="28" class="input-field" id="qbLabelInput" placeholder="Ej. Café, Pasaje, Almuerzo" required />
         </div>
         <div class="form-group">
           <label class="form-label" for="qbTypeSelect">Tipo</label>
@@ -1341,12 +1460,40 @@
     </div>
   </div>
 
+  <!-- 7. Centro de Notificaciones y Alertas -->
+  <div class="sheet-backdrop" id="notifCenterBackdrop" data-action="close-backdrop">
+    <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="notifCenterTitle">
+      <div class="sheet-grabber"></div>
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="notifCenterTitle">Alertas y Notificaciones</h2>
+        <button type="button" class="icon-circle-btn" data-action="close-modals" aria-label="Cerrar">✕</button>
+      </div>
+      <div id="notifCenterBody"></div>
+    </div>
+  </div>
+
+  <!-- 8. Confirmación Segura -->
+  <div class="sheet-backdrop" id="confirmBackdrop" data-action="close-confirm">
+    <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="sheet-grabber"></div>
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="confirmTitle">Confirmar acción</h2>
+        <button type="button" class="icon-circle-btn" data-action="cancel-confirm" aria-label="Cancelar">✕</button>
+      </div>
+      <p id="confirmMessage" style="margin:0 0 18px;font-size:14.5px;color:var(--text-secondary);"></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button type="button" class="btn-block-secondary tap-spring" data-action="cancel-confirm">Cancelar</button>
+        <button type="button" class="btn-block-danger tap-spring" id="confirmOkBtn" data-action="accept-confirm">Sí, confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       'use strict';
 
-      const STORAGE_KEY = 'mi_dinero_ssot_v2';
-      const BACKUP_KEY = 'mi_dinero_backup_previo';
+      const STORAGE_KEY = 'mi_dinero_clean_v3';
+      const BACKUP_KEY = 'mi_dinero_clean_backup_prev';
       const memoryStorage = {};
 
       function safeGetStorage(key) {
@@ -1451,72 +1598,53 @@
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
       }
 
-      function createDefaultState() {
-        const today = todayISO();
-        const yesterday = offsetDateISO(1);
+      function createDefaultNotificationPrefs() {
+        return {
+          enabled: false,
+          fixedDue: true,
+          budgetAlert: true,
+          hormigaAlert: true,
+          lowBalanceAlert: true,
+          lowBalanceThreshold: 50000,
+          dailyGoalAlert: true,
+          dailyCheckin: true,
+          dailyCheckinHour: '20:00',
+          sentLog: {}
+        };
+      }
+
+      // Estado 100% EN BLANCO (sin ejemplos ni datos personales de demostración)
+      function createCleanState() {
         const cycle = computeCycleInfo(new Date(), 1);
-
-        const accounts = [
-          { id: 'acc_efectivo', name: 'Efectivo', balance: 345000, color: '#34C759' },
-          { id: 'acc_nequi', name: 'Nequi', balance: 850000, color: '#FF2D55' },
-          { id: 'acc_bancolombia', name: 'Bancolombia', balance: 1850000, color: '#FF9500' },
-          { id: 'acc_nu', name: 'Nu Cajita', balance: 1400000, color: '#5856D6' }
-        ];
-
         const categories = [
-          { id: 'cat_hormiga', name: 'Café y Mecato', tag: 'CM', color: '#FF9500', nature: 'hormiga', monthlyBudget: 180000 },
-          { id: 'cat_transporte', name: 'Transporte', tag: 'TR', color: '#007AFF', nature: 'necesario', monthlyBudget: 250000 },
-          { id: 'cat_comida', name: 'Alimentación', tag: 'AL', color: '#34C759', nature: 'necesario', monthlyBudget: 450000 },
-          { id: 'cat_fijos', name: 'Servicios y Fijos', tag: 'SF', color: '#FF3B30', nature: 'necesario', monthlyBudget: 300000 },
-          { id: 'cat_ocio', name: 'Salidas y Ocio', tag: 'OC', color: '#30B0C7', nature: 'ocio', monthlyBudget: 200000 },
+          { id: 'cat_hormiga', name: 'Café y Mecato', tag: 'CM', color: '#FF9500', nature: 'hormiga', monthlyBudget: 0 },
+          { id: 'cat_transporte', name: 'Transporte', tag: 'TR', color: '#007AFF', nature: 'necesario', monthlyBudget: 0 },
+          { id: 'cat_comida', name: 'Alimentación', tag: 'AL', color: '#34C759', nature: 'necesario', monthlyBudget: 0 },
+          { id: 'cat_fijos', name: 'Servicios y Fijos', tag: 'SF', color: '#FF3B30', nature: 'necesario', monthlyBudget: 0 },
+          { id: 'cat_ocio', name: 'Salidas y Ocio', tag: 'OC', color: '#30B0C7', nature: 'ocio', monthlyBudget: 0 },
           { id: 'cat_ingreso', name: 'Ganancia / Ingreso', tag: 'IN', color: '#34C759', nature: 'ingreso', monthlyBudget: 0 }
-        ];
-
-        const transactions = [
-          { id: 'tx_init_1', type: 'income', amount: 356000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_efectivo', toAccountId: null, note: 'Base inicial Efectivo', date: yesterday, isOpening: true },
-          { id: 'tx_init_2', type: 'income', amount: 850000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_nequi', toAccountId: null, note: 'Base inicial Nequi', date: yesterday, isOpening: true },
-          { id: 'tx_init_3', type: 'income', amount: 1850000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_bancolombia', toAccountId: null, note: 'Base inicial Bancolombia', date: yesterday, isOpening: true },
-          { id: 'tx_init_4', type: 'income', amount: 1400000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_nu', toAccountId: null, note: 'Base inicial Nu Cajita', date: yesterday, isOpening: true },
-          { id: 'tx_demo_1', type: 'income', amount: 85000, categoryId: 'cat_ingreso', nature: 'ingreso', accountId: 'acc_efectivo', toAccountId: null, note: 'Ganancia del día', date: today, isOpening: false },
-          { id: 'tx_demo_2', type: 'expense', amount: 11000, categoryId: 'cat_hormiga', nature: 'hormiga', accountId: 'acc_efectivo', toAccountId: null, note: 'Empanada y café', date: today, isOpening: false }
-        ];
-
-        const projects = [
-          { id: 'proj_lima', name: 'Viaje a Lima', target: 3500000, saved: 2150000, color: '#007AFF' },
-          { id: 'proj_emergencia', name: 'Fondo Emergencia', target: 2000000, saved: 800000, color: '#34C759' }
-        ];
-
-        const reminders = [
-          { id: 'rem_plan', title: 'Plan móvil mensual', amount: 45000, dueDay: 18, accountId: 'acc_nequi', categoryId: 'cat_fijos', paidThisCycle: false, lastTxId: null },
-          { id: 'rem_gym', title: 'Mensualidad Gimnasio', amount: 90000, dueDay: 22, accountId: 'acc_bancolombia', categoryId: 'cat_fijos', paidThisCycle: false, lastTxId: null },
-          { id: 'rem_cloud', title: 'Suscripciones Digitales', amount: 60000, dueDay: 27, accountId: 'acc_nequi', categoryId: 'cat_fijos', paidThisCycle: false, lastTxId: null }
-        ];
-
-        const quickButtons = [
-          { id: 'qb_1', label: 'Café / Mecato', type: 'expense', amount: 5000, categoryId: 'cat_hormiga', accountId: 'acc_efectivo' },
-          { id: 'qb_2', label: 'Pasaje Bus', type: 'expense', amount: 6000, categoryId: 'cat_transporte', accountId: 'acc_efectivo' },
-          { id: 'qb_3', label: 'Almuerzo', type: 'expense', amount: 15000, categoryId: 'cat_comida', accountId: 'acc_nequi' },
-          { id: 'qb_4', label: 'Ganancia +$50k', type: 'income', amount: 50000, categoryId: 'cat_ingreso', accountId: 'acc_efectivo' }
         ];
 
         return {
           settings: {
-            userName: 'Jeffer',
+            userName: '',
             appName: 'Mi dinero',
             theme: 'light',
             accentColor: '#007AFF',
             glassIntensity: 'balanced',
             privacyMode: false,
-            dailyGoal: 85000,
+            dailyGoal: 0,
             cycleStartDay: 1,
-            lastCycleKey: cycle.key
+            lastCycleKey: cycle.key,
+            notifications: createDefaultNotificationPrefs()
           },
-          accounts,
+          accounts: [],
           categories,
-          transactions,
-          projects,
-          reminders,
-          quickButtons
+          transactions: [],
+          projects: [],
+          reminders: [],
+          quickButtons: [],
+          alertFeed: []
         };
       }
 
@@ -1527,7 +1655,9 @@
         movSearch: '',
         txModalType: 'expense',
         undoSnapshot: null,
+        pendingConfirmFn: null,
         toastTimer: null,
+        notifIntervalId: null,
         swStatus: 'Activo',
 
         init() {
@@ -1536,9 +1666,54 @@
           this.bindGlobalEvents();
           this.registerServiceWorker();
           this.updateNetworkIndicator();
+          this.handleHashRoute();
+
           window.addEventListener('online', () => this.updateNetworkIndicator());
           window.addEventListener('offline', () => this.updateNetworkIndicator());
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (ev) => {
+              if (ev.data && ev.data.type === 'OPEN_TAB' && ev.data.tab) {
+                this.activeTab = ev.data.tab;
+                this.render();
+              }
+            });
+          }
+
           this.render();
+          this.evaluateScheduledNotifications();
+          this.notifIntervalId = setInterval(() => this.evaluateScheduledNotifications(), 60000 * 5);
+        },
+
+        handleHashRoute() {
+          const hash = String(window.location.hash || '').replace('#', '').trim();
+          if (['overview', 'movements', 'projects', 'analytics', 'settings'].includes(hash)) {
+            this.activeTab = hash;
+          }
+        },
+
+        normalizeState(parsed) {
+          const clean = createCleanState();
+          const settings = {
+            ...clean.settings,
+            ...(parsed && parsed.settings ? parsed.settings : {}),
+            notifications: {
+              ...createDefaultNotificationPrefs(),
+              ...(parsed && parsed.settings && parsed.settings.notifications ? parsed.settings.notifications : {})
+            }
+          };
+          if (!settings.notifications.sentLog || typeof settings.notifications.sentLog !== 'object') {
+            settings.notifications.sentLog = {};
+          }
+          return {
+            settings,
+            accounts: Array.isArray(parsed && parsed.accounts) ? parsed.accounts : [],
+            categories: Array.isArray(parsed && parsed.categories) && parsed.categories.length > 0 ? parsed.categories : clean.categories,
+            transactions: Array.isArray(parsed && parsed.transactions) ? parsed.transactions : [],
+            projects: Array.isArray(parsed && parsed.projects) ? parsed.projects : [],
+            reminders: Array.isArray(parsed && parsed.reminders) ? parsed.reminders : [],
+            quickButtons: Array.isArray(parsed && parsed.quickButtons) ? parsed.quickButtons : [],
+            alertFeed: Array.isArray(parsed && parsed.alertFeed) ? parsed.alertFeed : []
+          };
         },
 
         loadState() {
@@ -1546,15 +1721,15 @@
           if (raw) {
             try {
               const parsed = JSON.parse(raw);
-              if (parsed && parsed.settings && Array.isArray(parsed.accounts) && Array.isArray(parsed.transactions)) {
-                this.state = parsed;
+              if (parsed && typeof parsed === 'object') {
+                this.state = this.normalizeState(parsed);
               }
             } catch (e) {
               this.state = null;
             }
           }
           if (!this.state) {
-            this.state = createDefaultState();
+            this.state = createCleanState();
           }
           this.ensureCycleReset();
           this.ensureAccountLedgerConsistencyOnLoad();
@@ -1601,7 +1776,7 @@
                 nature: diff > 0 ? 'ingreso' : 'necesario',
                 accountId: a.id,
                 toAccountId: null,
-                note: 'Ajuste de apertura ' + a.name,
+                note: 'Saldo inicial ' + a.name,
                 date: todayISO(),
                 isOpening: true
               });
@@ -1641,16 +1816,25 @@
           const today = todayISO();
           let todayIncome = 0;
           let todayExpense = 0;
+          let todayHormigaCount = 0;
+          let todayHormigaTotal = 0;
+
           this.state.transactions.forEach((tx) => {
             if (tx.isOpening) return;
             if (tx.date === today) {
               if (tx.type === 'income') todayIncome += Number(tx.amount) || 0;
-              if (tx.type === 'expense') todayExpense += Number(tx.amount) || 0;
+              if (tx.type === 'expense') {
+                todayExpense += Number(tx.amount) || 0;
+                if (tx.nature === 'hormiga') {
+                  todayHormigaCount += 1;
+                  todayHormigaTotal += Number(tx.amount) || 0;
+                }
+              }
             }
           });
 
-          const dailyGoal = Math.max(1, Number(this.state.settings.dailyGoal) || 85000);
-          const goalPct = Math.min(100, Math.round((todayIncome / dailyGoal) * 100));
+          const dailyGoal = Math.max(0, Number(this.state.settings.dailyGoal) || 0);
+          const goalPct = dailyGoal > 0 ? Math.min(100, Math.round((todayIncome / dailyGoal) * 100)) : 0;
           const freePct = totalAccounts > 0 ? Math.max(0, Math.round((freeBalance / totalAccounts) * 100)) : 0;
 
           return {
@@ -1662,6 +1846,8 @@
             todayIncome,
             todayExpense,
             todayNet: todayIncome - todayExpense,
+            todayHormigaCount,
+            todayHormigaTotal,
             dailyGoal,
             goalPct
           };
@@ -1688,6 +1874,337 @@
           return { ok: formulaOk && accountsOk, formulaOk, accountsOk, metrics: m };
         },
 
+        /* ======================================================================
+           MOTOR DE NOTIFICACIONES AL TELÉFONO + CENTRO DE ALERTAS INTERNO
+           ====================================================================== */
+        getNotificationPermission() {
+          if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported';
+          return Notification.permission;
+        },
+
+        requestNotificationPermission() {
+          const perm = this.getNotificationPermission();
+          if (perm === 'unsupported') {
+            this.showToast('Tu navegador no soporta notificaciones nativas (usaremos alertas internas)', false);
+            return;
+          }
+          if (perm === 'denied') {
+            this.showToast('Notificaciones bloqueadas: actívalas en los ajustes del navegador', false);
+            return;
+          }
+          Notification.requestPermission().then((result) => {
+            if (result === 'granted') {
+              this.state.settings.notifications.enabled = true;
+              this.saveState();
+              this.render();
+              this.sendNativeNotification(
+                'Notificaciones activadas en Mi dinero',
+                'Recibirás alertas de pagos fijos, topes de presupuesto, gastos hormiga y metas diarias.',
+                { tag: 'mi-dinero-welcome', tab: 'settings', force: true }
+              );
+              this.showToast('Notificaciones activadas correctamente', false);
+            } else {
+              this.state.settings.notifications.enabled = false;
+              this.saveState();
+              this.render();
+              this.showToast('Permiso no concedido', false);
+            }
+          }).catch(() => {
+            this.showToast('No se pudo solicitar el permiso de notificaciones', false);
+          });
+        },
+
+        pushAlertFeed(title, body, level, tab, dedupeKey) {
+          const today = todayISO();
+          const key = dedupeKey ? `${today}::${dedupeKey}` : '';
+          if (key && this.state.settings.notifications.sentLog[key]) {
+            return false;
+          }
+          if (key) {
+            this.state.settings.notifications.sentLog[key] = Date.now();
+            // Limpiar llaves viejas (más de 35 días)
+            const cutoff = Date.now() - 35 * 86400000;
+            Object.keys(this.state.settings.notifications.sentLog).forEach((k) => {
+              if (this.state.settings.notifications.sentLog[k] < cutoff) {
+                delete this.state.settings.notifications.sentLog[k];
+              }
+            });
+          }
+
+          this.state.alertFeed.unshift({
+            id: uid('al'),
+            title,
+            body,
+            level: level || 'info',
+            tab: tab || 'overview',
+            date: today,
+            time: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
+            read: false
+          });
+          if (this.state.alertFeed.length > 30) {
+            this.state.alertFeed = this.state.alertFeed.slice(0, 30);
+          }
+          this.saveState();
+          this.updateNotifBadge();
+          return true;
+        },
+
+        sendNativeNotification(title, body, opts) {
+          const o = opts || {};
+          const prefs = this.state.settings.notifications;
+          if (!o.force && (!prefs.enabled || this.getNotificationPermission() !== 'granted')) {
+            return;
+          }
+          const payload = {
+            body,
+            icon: './icon-192.png',
+            badge: './icon-192.png',
+            tag: o.tag || ('mi-dinero-' + Date.now()),
+            renotify: Boolean(o.force),
+            vibrate: [160, 80, 160],
+            data: { tab: o.tab || 'overview' }
+          };
+
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready
+              .then((reg) => {
+                if (reg && typeof reg.showNotification === 'function') {
+                  return reg.showNotification(title, payload);
+                }
+                new Notification(title, payload);
+                return null;
+              })
+              .catch(() => {
+                try { new Notification(title, payload); } catch (e) {}
+              });
+          } else if ('Notification' in window) {
+            try { new Notification(title, payload); } catch (e) {}
+          }
+        },
+
+        triggerSmartAlert(title, body, level, tab, dedupeKey) {
+          const isNew = this.pushAlertFeed(title, body, level, tab, dedupeKey);
+          if (isNew) {
+            this.sendNativeNotification(title, body, { tag: dedupeKey || 'mi-dinero-alert', tab });
+          }
+        },
+
+        evaluateScheduledNotifications() {
+          const prefs = this.state.settings.notifications;
+          const now = new Date();
+          const todayDay = now.getDate();
+
+          // 1. Alertas de pagos fijos vencidos o próximos a vencer
+          if (prefs.fixedDue) {
+            this.state.reminders.forEach((rem) => {
+              if (rem.paidThisCycle) return;
+              const diff = rem.dueDay - todayDay;
+              const lead = Number(rem.notifyDaysBefore !== undefined ? rem.notifyDaysBefore : 3);
+              if (diff < 0) {
+                this.triggerSmartAlert(
+                  `Pago fijo vencido: ${rem.title}`,
+                  `Venció el día ${rem.dueDay} por ${formatMoney(rem.amount, false)}. Márcalo al pagarlo.`,
+                  'danger',
+                  'overview',
+                  `rem_overdue_${rem.id}`
+                );
+              } else if (diff === 0) {
+                this.triggerSmartAlert(
+                  `Hoy vence: ${rem.title}`,
+                  `Recuerda pagar ${formatMoney(rem.amount, false)} hoy para mantener tu saldo al día.`,
+                  'warning',
+                  'overview',
+                  `rem_today_${rem.id}`
+                );
+              } else if (diff <= lead) {
+                this.triggerSmartAlert(
+                  `Pago próximo en ${diff} ${diff === 1 ? 'día' : 'días'}: ${rem.title}`,
+                  `Vence el día ${rem.dueDay} (${formatMoney(rem.amount, false)}). Ya está reservado en tu saldo libre.`,
+                  'warning',
+                  'overview',
+                  `rem_soon_${rem.id}_${diff}`
+                );
+              }
+            });
+          }
+
+          // 2. Recordatorio diario para registrar gastos si ya pasó la hora configurada
+          if (prefs.dailyCheckin && this.state.accounts.length > 0) {
+            const parts = String(prefs.dailyCheckinHour || '20:00').split(':');
+            const targetH = Number(parts[0]) || 20;
+            const targetM = Number(parts[1]) || 0;
+            const reached = now.getHours() > targetH || (now.getHours() === targetH && now.getMinutes() >= targetM);
+            const today = todayISO();
+            const hasTodayTx = this.state.transactions.some((tx) => !tx.isOpening && tx.date === today);
+            if (reached && !hasTodayTx) {
+              this.triggerSmartAlert(
+                '¿Anotaste tus movimientos de hoy?',
+                'Toma 10 segundos para registrar tus gastos o ingresos del día y no perder el rastro de tu dinero.',
+                'info',
+                'overview',
+                'daily_checkin'
+              );
+            }
+          }
+        },
+
+        evaluateMovementNotifications(tx) {
+          const prefs = this.state.settings.notifications;
+          const m = this.getMetrics();
+          const now = new Date();
+          const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+          // 1. Alerta de presupuesto mensual (80% y 100%)
+          if (prefs.budgetAlert && tx && tx.type === 'expense') {
+            const cat = this.state.categories.find((c) => c.id === tx.categoryId);
+            if (cat && cat.monthlyBudget > 0) {
+              const spent = this.state.transactions
+                .filter((t) => !t.isOpening && t.type === 'expense' && t.categoryId === cat.id && String(t.date).startsWith(ym))
+                .reduce((s, t) => s + (Number(t.amount) || 0), 0);
+              const pct = Math.round((spent / cat.monthlyBudget) * 100);
+              if (pct >= 100) {
+                this.triggerSmartAlert(
+                  `Tope excedido en ${cat.name}`,
+                  `Llevas ${formatMoney(spent, false)} de ${formatMoney(cat.monthlyBudget, false)} (${pct}%) este mes.`,
+                  'danger',
+                  'projects',
+                  `budget_100_${cat.id}_${ym}`
+                );
+              } else if (pct >= 80) {
+                this.triggerSmartAlert(
+                  `Presupuesto al ${pct}% en ${cat.name}`,
+                  `Has gastado ${formatMoney(spent, false)} de tu tope mensual de ${formatMoney(cat.monthlyBudget, false)}.`,
+                  'warning',
+                  'projects',
+                  `budget_80_${cat.id}_${ym}`
+                );
+              }
+            }
+          }
+
+          // 2. Alerta de gastos hormiga acumulados en el día (3 o más gastos hormiga hoy)
+          if (prefs.hormigaAlert && tx && tx.type === 'expense' && tx.nature === 'hormiga') {
+            if (m.todayHormigaCount >= 3) {
+              this.triggerSmartAlert(
+                `Cuidado con los gastos hormiga hoy`,
+                `Llevas ${m.todayHormigaCount} gastos hormiga hoy por un total de ${formatMoney(m.todayHormigaTotal, false)}.`,
+                'warning',
+                'analytics',
+                `hormiga_day_${m.todayHormigaCount}`
+              );
+            }
+          }
+
+          // 3. Alerta de saldo disponible bajo o negativo
+          if (prefs.lowBalanceAlert && this.state.accounts.length > 0) {
+            const threshold = Number(prefs.lowBalanceThreshold) || 50000;
+            if (m.freeBalance < 0) {
+              this.triggerSmartAlert(
+                'Saldo disponible en negativo',
+                `Tu saldo libre está en ${formatMoney(m.freeBalance, false)} después de proyectos y pagos fijos pendientes.`,
+                'danger',
+                'overview',
+                'low_bal_negative'
+              );
+            } else if (m.freeBalance <= threshold && tx && tx.type === 'expense') {
+              this.triggerSmartAlert(
+                'Saldo disponible bajo',
+                `Te quedan ${formatMoney(m.freeBalance, false)} libres hoy (por debajo de tu aviso de ${formatMoney(threshold, false)}).`,
+                'warning',
+                'overview',
+                'low_bal_threshold'
+              );
+            }
+          }
+
+          // 4. Meta de ganancia diaria alcanzada
+          if (prefs.dailyGoalAlert && tx && tx.type === 'income' && m.dailyGoal > 0 && m.todayIncome >= m.dailyGoal) {
+            this.triggerSmartAlert(
+              'Meta de ganancia diaria cumplida',
+              `Alcanzaste ${formatMoney(m.todayIncome, false)} hoy (100% de tu meta de ${formatMoney(m.dailyGoal, false)}).`,
+              'positive',
+              'overview',
+              'daily_goal_hit'
+            );
+          }
+        },
+
+        updateNotifBadge() {
+          const badge = document.getElementById('notifBadgeCount');
+          if (!badge) return;
+          const unread = this.state.alertFeed.filter((a) => !a.read).length;
+          if (unread > 0) {
+            badge.textContent = unread > 9 ? '9+' : String(unread);
+            badge.classList.add('visible');
+          } else {
+            badge.classList.remove('visible');
+          }
+        },
+
+        openNotifCenter() {
+          this.state.alertFeed.forEach((a) => { a.read = true; });
+          this.saveState();
+          this.updateNotifBadge();
+          this.renderNotifCenterBody();
+          document.getElementById('notifCenterBackdrop').classList.add('open');
+        },
+
+        renderNotifCenterBody() {
+          const body = document.getElementById('notifCenterBody');
+          if (!body) return;
+          const perm = this.getNotificationPermission();
+          const prefs = this.state.settings.notifications;
+
+          let statusHtml = '';
+          if (perm === 'granted' && prefs.enabled) {
+            statusHtml = `
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:14px;background:var(--positive-soft);margin-bottom:14px;">
+                <span style="font-size:13px;font-weight:700;color:var(--positive);">Notificaciones al teléfono activas</span>
+                <button type="button" class="filter-pill tap-spring" style="min-height:32px;padding:4px 10px;" data-action="test-notification">Probar</button>
+              </div>
+            `;
+          } else {
+            statusHtml = `
+              <div style="padding:13px;border-radius:14px;background:var(--accent-soft);margin-bottom:14px;">
+                <div style="font-size:13.5px;font-weight:700;margin-bottom:4px;">Activa las notificaciones en tu teléfono</div>
+                <p style="margin:0 0 10px;font-size:12.5px;color:var(--text-secondary);">Recibe avisos de pagos fijos por vencer, topes de presupuesto, gastos hormiga y metas diarias.</p>
+                <button type="button" class="btn-block-primary tap-spring" style="min-height:42px;font-size:13.5px;" data-action="request-notif-perm">Activar notificaciones ahora</button>
+              </div>
+            `;
+          }
+
+          const feedHtml = this.state.alertFeed.length === 0
+            ? `<div class="empty-guide-card" style="margin-bottom:12px;">
+                <p style="margin:0;font-size:13px;color:var(--text-secondary);">Sin alertas todavía. Aquí aparecerán tus avisos de pagos fijos, presupuestos y metas.</p>
+              </div>`
+            : `<div class="grouped-list">
+                ${this.state.alertFeed.map((al) => {
+                  const col = al.level === 'danger' ? 'var(--danger)' : (al.level === 'warning' ? 'var(--warning)' : (al.level === 'positive' ? 'var(--positive)' : 'var(--accent)'));
+                  return `
+                    <div class="list-row">
+                      <div class="list-row-main">
+                        <span style="width:10px;height:10px;border-radius:50%;background:${col};flex-shrink:0;"></span>
+                        <div class="list-row-text">
+                          <div class="list-row-title" style="white-space:normal;">${esc(al.title)}</div>
+                          <div class="list-row-meta" style="white-space:normal;">${esc(al.body)}</div>
+                          <div class="list-row-meta tabular" style="font-size:11px;margin-top:3px;">${esc(al.date)} • ${esc(al.time)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>`;
+
+          body.innerHTML = `
+            ${statusHtml}
+            ${feedHtml}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button type="button" class="btn-block-secondary tap-spring" data-action="go-notif-settings">Configurar alertas</button>
+              <button type="button" class="btn-block-secondary tap-spring" data-action="clear-alert-feed">Limpiar historial</button>
+            </div>
+          `;
+        },
+
         applyThemeAndTokens() {
           const root = document.documentElement;
           const s = this.state.settings;
@@ -1708,8 +2225,13 @@
         registerServiceWorker() {
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
-              .then(() => { this.swStatus = 'Instalado (100% Offline)'; })
-              .catch(() => { this.swStatus = 'Listo en HTTPS / Netlify'; });
+              .then(() => {
+                this.swStatus = 'Instalado (100% Offline)';
+                if (this.activeTab === 'settings') this.render();
+              })
+              .catch(() => {
+                this.swStatus = 'Listo en HTTPS / GitHub';
+              });
           } else {
             this.swStatus = 'Almacenamiento Local Activo';
           }
@@ -1751,7 +2273,7 @@
         undoLast() {
           if (!this.undoSnapshot) return;
           try {
-            this.state = JSON.parse(this.undoSnapshot.data);
+            this.state = this.normalizeState(JSON.parse(this.undoSnapshot.data));
             this.undoSnapshot = null;
             this.recalculateAllAccountBalances();
             this.saveState();
@@ -1761,6 +2283,19 @@
           } catch (e) {
             this.showToast('No se pudo deshacer', false);
           }
+        },
+
+        askConfirm(title, message, okLabel, onAccept) {
+          document.getElementById('confirmTitle').textContent = title;
+          document.getElementById('confirmMessage').textContent = message;
+          document.getElementById('confirmOkBtn').textContent = okLabel || 'Sí, confirmar';
+          this.pendingConfirmFn = onAccept;
+          document.getElementById('confirmBackdrop').classList.add('open');
+        },
+
+        closeConfirm() {
+          this.pendingConfirmFn = null;
+          document.getElementById('confirmBackdrop').classList.remove('open');
         },
 
         bindGlobalEvents() {
@@ -1777,6 +2312,20 @@
               this.closeAllModals();
               return;
             }
+            if (action === 'close-confirm') {
+              if (e.target === target) this.closeConfirm();
+              return;
+            }
+            if (action === 'cancel-confirm') {
+              this.closeConfirm();
+              return;
+            }
+            if (action === 'accept-confirm') {
+              const fn = this.pendingConfirmFn;
+              this.closeConfirm();
+              if (typeof fn === 'function') fn();
+              return;
+            }
             if (action === 'nav-tab') {
               const tab = target.getAttribute('data-tab');
               if (tab) {
@@ -1784,6 +2333,68 @@
                 this.render();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
+              return;
+            }
+            if (action === 'open-notif-center') {
+              this.openNotifCenter();
+              return;
+            }
+            if (action === 'go-notif-settings') {
+              this.closeAllModals();
+              this.activeTab = 'settings';
+              this.render();
+              return;
+            }
+            if (action === 'clear-alert-feed') {
+              this.state.alertFeed = [];
+              this.saveState();
+              this.updateNotifBadge();
+              this.renderNotifCenterBody();
+              this.showToast('Historial de alertas limpio', false);
+              return;
+            }
+            if (action === 'request-notif-perm') {
+              this.requestNotificationPermission();
+              return;
+            }
+            if (action === 'test-notification') {
+              if (this.getNotificationPermission() !== 'granted') {
+                this.requestNotificationPermission();
+                return;
+              }
+              this.pushAlertFeed(
+                'Notificación de prueba',
+                'Tu teléfono está listo para recibir avisos de Mi dinero.',
+                'positive',
+                'overview',
+                ''
+              );
+              this.sendNativeNotification(
+                'Mi dinero — Prueba exitosa',
+                'Así te avisaremos cuando venza un pago fijo, llegues a un tope o cumplas tu meta diaria.',
+                { tag: 'mi-dinero-test', tab: 'overview', force: true }
+              );
+              this.renderNotifCenterBody();
+              this.showToast('Notificación enviada al teléfono', false);
+              return;
+            }
+            if (action === 'toggle-notif-pref') {
+              const key = target.getAttribute('data-pref');
+              if (!key) return;
+              if (key === 'enabled') {
+                if (!this.state.settings.notifications.enabled) {
+                  this.requestNotificationPermission();
+                } else {
+                  this.state.settings.notifications.enabled = false;
+                  this.saveState();
+                  this.render();
+                  this.showToast('Notificaciones pausadas', false);
+                }
+                return;
+              }
+              this.state.settings.notifications[key] = !this.state.settings.notifications[key];
+              this.saveState();
+              this.render();
               return;
             }
             if (action === 'toggle-privacy') {
@@ -1822,7 +2433,12 @@
               return;
             }
             if (action === 'delete-reminder') {
-              this.deleteReminder(target.getAttribute('data-id'));
+              this.confirmDeleteReminder(target.getAttribute('data-id'));
+              return;
+            }
+            if (action === 'delete-reminder-modal') {
+              const remId = document.getElementById('remIdInput').value;
+              if (remId) this.confirmDeleteReminder(remId);
               return;
             }
             if (action === 'open-project-modal') {
@@ -1834,7 +2450,7 @@
               return;
             }
             if (action === 'delete-project') {
-              this.deleteProject(target.getAttribute('data-id'));
+              this.confirmDeleteProject(target.getAttribute('data-id'));
               return;
             }
             if (action === 'delete-tx') {
@@ -1913,19 +2529,29 @@
               this.showToast(res.ok ? 'Cuadre perfecto: 100% verificado' : 'Descuadre detectado y corregido', false);
               return;
             }
-            if (action === 'reset-demo') {
-              this.captureUndo('Reiniciar datos');
-              this.state = createDefaultState();
-              this.saveState();
-              this.applyThemeAndTokens();
-              this.render();
-              this.showToast('Datos restaurados', true);
+            if (action === 'reset-all-clean') {
+              this.askConfirm(
+                'Dejar app en blanco',
+                'Se eliminarán todas tus cuentas, movimientos, proyectos y pagos fijos. Haz un respaldo JSON antes si deseas conservarlos.',
+                'Sí, borrar todo',
+                () => {
+                  safeSetStorage(BACKUP_KEY, JSON.stringify(this.state));
+                  this.state = createCleanState();
+                  this.saveState();
+                  this.applyThemeAndTokens();
+                  this.render();
+                  this.showToast('App reiniciada en blanco', false);
+                }
+              );
               return;
             }
           });
 
           document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.closeAllModals();
+            if (e.key === 'Escape') {
+              this.closeConfirm();
+              this.closeAllModals();
+            }
           });
 
           document.addEventListener('input', (e) => {
@@ -1964,14 +2590,26 @@
             if (e.target.id === 'accountForm') { e.preventDefault(); this.handleAccountSubmit(); }
             if (e.target.id === 'quickBtnForm') { e.preventDefault(); this.handleQuickBtnSubmit(); }
             if (e.target.id === 'profileSettingsForm') { e.preventDefault(); this.handleProfileSettingsSubmit(); }
+            if (e.target.id === 'notifSettingsForm') { e.preventDefault(); this.handleNotifSettingsSubmit(); }
           });
         },
 
         closeAllModals() {
-          document.querySelectorAll('.sheet-backdrop').forEach((el) => el.classList.remove('open'));
+          document.querySelectorAll('.sheet-backdrop:not(#confirmBackdrop)').forEach((el) => el.classList.remove('open'));
         },
 
         openTxModal(type, editId) {
+          if (this.state.accounts.length === 0) {
+            this.showToast('Primero crea una cuenta o bolsillo (ej. Efectivo o Nequi)', false);
+            this.openAccountModal('');
+            return;
+          }
+          if (type === 'transfer' && this.state.accounts.length < 2) {
+            this.showToast('Necesitas al menos 2 cuentas para transferir entre ellas', false);
+            this.openAccountModal('');
+            return;
+          }
+
           const backdrop = document.getElementById('txModalBackdrop');
           const catSel = document.getElementById('txCategorySelect');
           const accSel = document.getElementById('txAccountSelect');
@@ -2071,10 +2709,11 @@
 
           this.captureUndo(editId ? 'Editar movimiento' : 'Nuevo movimiento');
 
+          let savedTx = null;
           if (editId) {
             const idx = this.state.transactions.findIndex((t) => t.id === editId);
             if (idx !== -1) {
-              this.state.transactions[idx] = {
+              savedTx = {
                 ...this.state.transactions[idx],
                 type,
                 amount,
@@ -2085,9 +2724,10 @@
                 note,
                 date
               };
+              this.state.transactions[idx] = savedTx;
             }
           } else {
-            this.state.transactions.unshift({
+            savedTx = {
               id: uid('tx'),
               type,
               amount,
@@ -2098,13 +2738,15 @@
               note,
               date,
               isOpening: false
-            });
+            };
+            this.state.transactions.unshift(savedTx);
           }
 
           this.recalculateAllAccountBalances();
           this.saveState();
           this.closeAllModals();
           this.render();
+          if (savedTx) this.evaluateMovementNotifications(savedTx);
           this.showToast(editId ? 'Movimiento actualizado' : 'Movimiento registrado', true);
         },
 
@@ -2130,10 +2772,13 @@
           if (!qb) return;
           const cat = this.state.categories.find((c) => c.id === qb.categoryId) || this.state.categories[0];
           const acc = this.state.accounts.find((a) => a.id === qb.accountId) || this.state.accounts[0];
-          if (!acc) return;
+          if (!acc) {
+            this.showToast('Crea una cuenta primero', false);
+            return;
+          }
 
           this.captureUndo('Registro rápido');
-          this.state.transactions.unshift({
+          const newTx = {
             id: uid('tx'),
             type: qb.type,
             amount: Math.round(Number(qb.amount) || 0),
@@ -2144,10 +2789,12 @@
             note: qb.label,
             date: todayISO(),
             isOpening: false
-          });
+          };
+          this.state.transactions.unshift(newTx);
           this.recalculateAllAccountBalances();
           this.saveState();
           this.render();
+          this.evaluateMovementNotifications(newTx);
           this.showToast(`${qb.label} (${formatMoney(qb.amount, false)})`, true);
         },
 
@@ -2158,9 +2805,13 @@
 
           if (!rem.paidThisCycle) {
             const acc = this.state.accounts.find((a) => a.id === rem.accountId) || this.state.accounts[0];
-            if (!acc) return;
+            if (!acc) {
+              this.showToast('Crea una cuenta primero para descontar el pago fijo', false);
+              this.openAccountModal('');
+              return;
+            }
             const newTxId = uid('tx_fix');
-            this.state.transactions.unshift({
+            const newTx = {
               id: newTxId,
               type: 'expense',
               amount: Math.round(Number(rem.amount) || 0),
@@ -2171,12 +2822,14 @@
               note: 'Pago fijo: ' + rem.title,
               date: todayISO(),
               isOpening: false
-            });
+            };
+            this.state.transactions.unshift(newTx);
             rem.paidThisCycle = true;
             rem.lastTxId = newTxId;
             this.recalculateAllAccountBalances();
             this.saveState();
             this.render();
+            this.evaluateMovementNotifications(newTx);
             this.showToast(`Pagado: ${rem.title}`, true);
           } else {
             if (rem.lastTxId) {
@@ -2194,7 +2847,13 @@
         openReminderModal(remId) {
           const accSel = document.getElementById('remAccountSelect');
           const catSel = document.getElementById('remCategorySelect');
-          accSel.innerHTML = this.state.accounts.map((a) => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
+          const delBtn = document.getElementById('remDeleteInsideBtn');
+
+          if (this.state.accounts.length === 0) {
+            accSel.innerHTML = '<option value="">Sin cuenta asignada (créala luego)</option>';
+          } else {
+            accSel.innerHTML = this.state.accounts.map((a) => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
+          }
           catSel.innerHTML = this.state.categories.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
 
           if (remId) {
@@ -2205,14 +2864,20 @@
             document.getElementById('remTitleInput').value = r.title;
             document.getElementById('remAmountInput').value = r.amount;
             document.getElementById('remDueDayInput').value = r.dueDay;
-            accSel.value = r.accountId;
-            catSel.value = r.categoryId;
+            document.getElementById('remNotifyDaysSelect').value = String(r.notifyDaysBefore !== undefined ? r.notifyDaysBefore : 3);
+            if (r.accountId) accSel.value = r.accountId;
+            if (r.categoryId) catSel.value = r.categoryId;
+            if (delBtn) delBtn.style.display = 'inline-flex';
           } else {
             document.getElementById('reminderModalTitle').textContent = 'Nuevo pago fijo';
             document.getElementById('remIdInput').value = '';
             document.getElementById('remTitleInput').value = '';
             document.getElementById('remAmountInput').value = '';
             document.getElementById('remDueDayInput').value = 15;
+            document.getElementById('remNotifyDaysSelect').value = '3';
+            const fijosCat = this.state.categories.find((c) => c.id === 'cat_fijos');
+            if (fijosCat) catSel.value = fijosCat.id;
+            if (delBtn) delBtn.style.display = 'none';
           }
           document.getElementById('reminderModalBackdrop').classList.add('open');
         },
@@ -2222,14 +2887,35 @@
           const title = document.getElementById('remTitleInput').value.trim();
           const amount = Math.round(Number(document.getElementById('remAmountInput').value) || 0);
           const dueDay = Math.min(31, Math.max(1, Number(document.getElementById('remDueDayInput').value) || 1));
-          const accountId = document.getElementById('remAccountSelect').value;
-          const categoryId = document.getElementById('remCategorySelect').value;
+          const notifyDaysBefore = Math.max(0, Number(document.getElementById('remNotifyDaysSelect').value) || 0);
+          const accountId = document.getElementById('remAccountSelect').value || '';
+          const categoryId = document.getElementById('remCategorySelect').value || 'cat_fijos';
           if (!title || amount <= 0) return;
 
           if (id) {
             const idx = this.state.reminders.findIndex((r) => r.id === id);
             if (idx !== -1) {
-              this.state.reminders[idx] = { ...this.state.reminders[idx], title, amount, dueDay, accountId, categoryId };
+              const prev = this.state.reminders[idx];
+              this.state.reminders[idx] = {
+                ...prev,
+                title,
+                amount,
+                dueDay,
+                notifyDaysBefore,
+                accountId,
+                categoryId
+              };
+              // Si ya estaba pagado este ciclo y tiene movimiento asociado, sincronizamos monto y detalle
+              if (prev.paidThisCycle && prev.lastTxId) {
+                const tx = this.state.transactions.find((t) => t.id === prev.lastTxId);
+                if (tx) {
+                  tx.amount = amount;
+                  tx.note = 'Pago fijo: ' + title;
+                  tx.categoryId = categoryId;
+                  if (accountId) tx.accountId = accountId;
+                  this.recalculateAllAccountBalances();
+                }
+              }
             }
           } else {
             this.state.reminders.push({
@@ -2237,6 +2923,7 @@
               title,
               amount,
               dueDay,
+              notifyDaysBefore,
               accountId,
               categoryId,
               paidThisCycle: false,
@@ -2246,15 +2933,26 @@
           this.saveState();
           this.closeAllModals();
           this.render();
-          this.showToast('Pago fijo guardado', false);
+          this.evaluateScheduledNotifications();
+          this.showToast(id ? 'Pago fijo actualizado' : 'Pago fijo guardado', false);
         },
 
-        deleteReminder(id) {
-          this.captureUndo('Eliminar pago fijo');
-          this.state.reminders = this.state.reminders.filter((r) => r.id !== id);
-          this.saveState();
-          this.render();
-          this.showToast('Pago fijo eliminado', true);
+        confirmDeleteReminder(id) {
+          const rem = this.state.reminders.find((r) => r.id === id);
+          if (!rem) return;
+          this.askConfirm(
+            'Eliminar pago fijo',
+            `¿Deseas eliminar "${rem.title}" (${formatMoney(rem.amount, false)}) de tu lista de pagos fijos?`,
+            'Sí, eliminar',
+            () => {
+              this.captureUndo('Eliminar pago fijo');
+              this.state.reminders = this.state.reminders.filter((r) => r.id !== id);
+              this.saveState();
+              this.closeAllModals();
+              this.render();
+              this.showToast('Pago fijo eliminado', true);
+            }
+          );
         },
 
         openProjectModal(projId) {
@@ -2290,7 +2988,7 @@
           const otherSaved = this.state.projects
             .filter((p) => p.id !== id)
             .reduce((s, p) => s + (Number(p.saved) || 0), 0);
-          if (otherSaved + saved > m.totalAccounts) {
+          if (saved > 0 && otherSaved + saved > m.totalAccounts) {
             this.showToast('No puedes apartar más dinero del total en tus cuentas', false);
             return;
           }
@@ -2324,12 +3022,21 @@
           this.showToast(delta > 0 ? `Apartado +${formatMoney(delta, false)} a ${p.name}` : `Liberado ${formatMoney(Math.abs(delta), false)} de ${p.name}`, true);
         },
 
-        deleteProject(projId) {
-          this.captureUndo('Eliminar proyecto');
-          this.state.projects = this.state.projects.filter((p) => p.id !== projId);
-          this.saveState();
-          this.render();
-          this.showToast('Proyecto eliminado (fondos liberados)', true);
+        confirmDeleteProject(projId) {
+          const p = this.state.projects.find((x) => x.id === projId);
+          if (!p) return;
+          this.askConfirm(
+            'Eliminar proyecto',
+            `¿Eliminar "${p.name}"? El dinero apartado (${formatMoney(p.saved, false)}) volverá a estar libre.`,
+            'Sí, eliminar',
+            () => {
+              this.captureUndo('Eliminar proyecto');
+              this.state.projects = this.state.projects.filter((x) => x.id !== projId);
+              this.saveState();
+              this.render();
+              this.showToast('Proyecto eliminado (fondos liberados)', true);
+            }
+          );
         },
 
         openCategoryModal(catId) {
@@ -2402,7 +3109,7 @@
             document.getElementById('accountModalTitle').textContent = 'Nueva cuenta';
             document.getElementById('accIdInput').value = '';
             document.getElementById('accNameInput').value = '';
-            document.getElementById('accBalanceInput').value = 0;
+            document.getElementById('accBalanceInput').value = '';
             document.getElementById('accColorInput').value = '#007AFF';
           }
           document.getElementById('accountModalBackdrop').classList.add('open');
@@ -2462,10 +3169,6 @@
         },
 
         deleteAccount(id) {
-          if (this.state.accounts.length <= 1) {
-            this.showToast('Debes conservar al menos una cuenta', false);
-            return;
-          }
           const hasTx = this.state.transactions.some((t) => !t.isOpening && (t.accountId === id || t.toAccountId === id));
           if (hasTx) {
             this.showToast('Transfiere o borra sus movimientos primero', false);
@@ -2480,6 +3183,11 @@
         },
 
         openQuickBtnModal(qbId) {
+          if (this.state.accounts.length === 0) {
+            this.showToast('Crea primero una cuenta antes de añadir botones rápidos', false);
+            this.openAccountModal('');
+            return;
+          }
           const catSel = document.getElementById('qbCategorySelect');
           const accSel = document.getElementById('qbAccountSelect');
           catSel.innerHTML = this.state.categories.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
@@ -2534,8 +3242,8 @@
         },
 
         handleProfileSettingsSubmit() {
-          const userName = document.getElementById('setUserNameInput').value.trim() || 'Jeffer';
-          const dailyGoal = Math.max(1000, Math.round(Number(document.getElementById('setDailyGoalInput').value) || 85000));
+          const userName = document.getElementById('setUserNameInput').value.trim();
+          const dailyGoal = Math.max(0, Math.round(Number(document.getElementById('setDailyGoalInput').value) || 0));
           const cycleStartDay = Math.min(28, Math.max(1, Number(document.getElementById('setCycleDayInput').value) || 1));
 
           this.state.settings.userName = userName;
@@ -2545,6 +3253,15 @@
           this.saveState();
           this.render();
           this.showToast('Preferencias guardadas', false);
+        },
+
+        handleNotifSettingsSubmit() {
+          const lowBal = Math.max(0, Math.round(Number(document.getElementById('setLowBalInput').value) || 0));
+          const hour = document.getElementById('setCheckinHourInput').value || '20:00';
+          this.state.settings.notifications.lowBalanceThreshold = lowBal;
+          this.state.settings.notifications.dailyCheckinHour = hour;
+          this.saveState();
+          this.showToast('Ajustes de alertas guardados', false);
         },
 
         exportCSV() {
@@ -2583,18 +3300,15 @@
                 typeof parsed === 'object' &&
                 parsed.settings &&
                 Array.isArray(parsed.accounts) &&
-                parsed.accounts.length > 0 &&
                 Array.isArray(parsed.categories) &&
-                Array.isArray(parsed.transactions) &&
-                Array.isArray(parsed.projects) &&
-                Array.isArray(parsed.reminders);
+                Array.isArray(parsed.transactions);
 
               if (!valid) {
                 this.showToast('Archivo JSON inválido o incompleto', false);
                 return;
               }
               safeSetStorage(BACKUP_KEY, JSON.stringify(this.state));
-              this.state = parsed;
+              this.state = this.normalizeState(parsed);
               this.ensureCycleReset();
               this.ensureAccountLedgerConsistencyOnLoad();
               this.saveState();
@@ -2615,7 +3329,7 @@
             return;
           }
           try {
-            this.state = JSON.parse(prev);
+            this.state = this.normalizeState(JSON.parse(prev));
             this.recalculateAllAccountBalances();
             this.saveState();
             this.applyThemeAndTokens();
@@ -2647,9 +3361,10 @@
           const cycleBadge = document.getElementById('cycleBadge');
           const eyeSvg = document.getElementById('privacyIconSvg');
 
-          if (avatar) avatar.textContent = (s.userName || 'J').trim().charAt(0).toUpperCase();
+          const cleanName = (s.userName || '').trim();
+          if (avatar) avatar.textContent = cleanName ? cleanName.charAt(0).toUpperCase() : 'M';
           if (brand) brand.textContent = s.appName || 'Mi dinero';
-          if (greeting) greeting.textContent = `Hola, ${s.userName || 'Jeffer'}`;
+          if (greeting) greeting.textContent = cleanName ? `Hola, ${cleanName}` : 'Tu resumen';
           if (cycleBadge) cycleBadge.textContent = `Corte día ${s.cycleStartDay || 1}`;
 
           if (dateLabel) {
@@ -2671,6 +3386,7 @@
           document.querySelectorAll('.nav-tab-btn').forEach((btn) => {
             btn.classList.toggle('active', btn.getAttribute('data-tab') === this.activeTab);
           });
+          this.updateNotifBadge();
         },
 
         render() {
@@ -2688,50 +3404,75 @@
         renderOverviewTab() {
           const m = this.getMetrics();
           const hide = this.state.settings.privacyMode;
-          const freeBadgeClass = m.freeBalance < 0 ? 'badge-danger' : (m.freePct < 20 ? 'badge-warning' : 'badge-positive');
+          const freeBadgeClass = m.freeBalance < 0 ? 'badge-danger' : (m.totalAccounts > 0 && m.freePct < 20 ? 'badge-warning' : 'badge-positive');
 
-          const quickHtml = this.state.quickButtons.map((qb) => {
-            const cat = this.state.categories.find((c) => c.id === qb.categoryId);
-            const acc = this.state.accounts.find((a) => a.id === qb.accountId);
-            const color = escColor(cat ? cat.color : '#007AFF');
-            const isInc = qb.type === 'income';
-            return `
-              <button type="button" class="quick-chip-btn tap-spring" data-action="quick-trigger" data-id="${esc(qb.id)}">
-                <div class="quick-chip-left">
-                  <div class="squircle-icon" style="background:${hexToRgba(color, 0.14)};color:${color};">
-                    ${esc(cat ? cat.tag : '1T')}
-                  </div>
-                  <div style="min-width:0;">
-                    <div class="quick-chip-name">${esc(qb.label)}</div>
-                    <div class="quick-chip-sub">${esc(acc ? acc.name : '')}</div>
-                  </div>
-                </div>
-                <span class="quick-chip-amount tabular" style="color:${isInc ? 'var(--positive)' : 'var(--text-primary)'};">
-                  ${isInc ? '+' : '-'}${formatMoney(qb.amount, hide)}
-                </span>
-              </button>
-            `;
-          }).join('');
-
-          const accountsHtml = this.state.accounts.map((acc) => {
-            const col = escColor(acc.color);
-            return `
-              <div class="account-wallet-card">
-                <div class="account-accent-bar" style="background:${col};"></div>
-                <div class="account-name-row">
-                  <span class="account-name">${esc(acc.name)}</span>
-                  <span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></span>
-                </div>
-                <div class="account-bal tabular">${formatMoney(acc.balance, hide)}</div>
+          const isFirstTime = this.state.accounts.length === 0 && this.state.transactions.length === 0;
+          const setupBanner = isFirstTime ? `
+            <div class="setup-banner">
+              <div style="min-width:0;">
+                <div style="font-size:14px;font-weight:700;">Tu app está en blanco y lista</div>
+                <div style="font-size:12.5px;color:var(--text-secondary);">Empieza creando tu primera cuenta (Efectivo, Nequi o Banco).</div>
               </div>
-            `;
-          }).join('');
+              <button type="button" class="primary-pill-btn tap-spring" style="height:36px;font-size:12.5px;" data-action="open-account-modal">+ Cuenta</button>
+            </div>
+          ` : '';
+
+          const quickHtml = this.state.quickButtons.length === 0
+            ? `<div class="empty-guide-card">
+                <p style="margin:0 0 10px;font-size:13px;color:var(--text-secondary);">Crea accesos de 1 toque para tus gastos o ingresos más repetidos (café, pasaje, almuerzo).</p>
+                <button type="button" class="filter-pill active tap-spring" data-action="open-qb-modal">+ Crear botón rápido</button>
+              </div>`
+            : `<div class="quick-grid">
+                ${this.state.quickButtons.map((qb) => {
+                  const cat = this.state.categories.find((c) => c.id === qb.categoryId);
+                  const acc = this.state.accounts.find((a) => a.id === qb.accountId);
+                  const color = escColor(cat ? cat.color : '#007AFF');
+                  const isInc = qb.type === 'income';
+                  return `
+                    <button type="button" class="quick-chip-btn tap-spring" data-action="quick-trigger" data-id="${esc(qb.id)}">
+                      <div class="quick-chip-left">
+                        <div class="squircle-icon" style="background:${hexToRgba(color, 0.14)};color:${color};">
+                          ${esc(cat ? cat.tag : '1T')}
+                        </div>
+                        <div style="min-width:0;">
+                          <div class="quick-chip-name">${esc(qb.label)}</div>
+                          <div class="quick-chip-sub">${esc(acc ? acc.name : '')}</div>
+                        </div>
+                      </div>
+                      <span class="quick-chip-amount tabular" style="color:${isInc ? 'var(--positive)' : 'var(--text-primary)'};">
+                        ${isInc ? '+' : '-'}${formatMoney(qb.amount, hide)}
+                      </span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>`;
+
+          const accountsHtml = this.state.accounts.length === 0
+            ? `<div class="empty-guide-card">
+                <p style="margin:0 0 10px;font-size:13.5px;color:var(--text-secondary);">Aún no tienes cuentas agregadas. Agrega dónde guardas tu dinero (Efectivo, Nequi, Bancolombia, etc.).</p>
+                <button type="button" class="primary-pill-btn tap-spring" data-action="open-account-modal">+ Agregar primera cuenta</button>
+              </div>`
+            : `<div class="accounts-grid">
+                ${this.state.accounts.map((acc) => {
+                  const col = escColor(acc.color);
+                  return `
+                    <button type="button" class="account-wallet-card tap-spring" data-action="open-account-modal" data-id="${esc(acc.id)}" title="Tocar para editar cuenta">
+                      <div class="account-accent-bar" style="background:${col};"></div>
+                      <div class="account-name-row">
+                        <span class="account-name">${esc(acc.name)}</span>
+                        <span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></span>
+                      </div>
+                      <div class="account-bal tabular">${formatMoney(acc.balance, hide)}</div>
+                    </button>
+                  `;
+                }).join('')}
+              </div>`;
 
           const todayDay = new Date().getDate();
           const remindersHtml = this.state.reminders.length === 0
             ? `<div class="empty-guide-card">
-                <p style="margin:0 0 10px;font-size:13.5px;color:var(--text-secondary);">Sin pagos fijos registrados este ciclo.</p>
-                <button type="button" class="primary-pill-btn" data-action="open-reminder-modal">+ Agregar primer pago fijo</button>
+                <p style="margin:0 0 10px;font-size:13.5px;color:var(--text-secondary);">Agrega tus pagos fijos del mes (arriendo, internet, plan móvil) para descontarlos de tu saldo libre y recibir alertas antes de que venzan.</p>
+                <button type="button" class="primary-pill-btn tap-spring" data-action="open-reminder-modal">+ Agregar pago fijo</button>
               </div>`
             : `<div class="grouped-list">
                 ${this.state.reminders.map((rem) => {
@@ -2745,7 +3486,7 @@
                   } else if (diff < 0) {
                     dueLabel = `Vencido (día ${rem.dueDay})`;
                     dueColor = 'var(--danger)';
-                  } else if (diff <= 3) {
+                  } else if (diff <= (rem.notifyDaysBefore !== undefined ? rem.notifyDaysBefore : 3)) {
                     dueLabel = diff === 0 ? 'Vence hoy' : `Vence en ${diff} d`;
                     dueColor = 'var(--warning)';
                   }
@@ -2759,11 +3500,17 @@
                         </button>
                         <div class="list-row-text">
                           <div class="list-row-title" style="${rem.paidThisCycle ? 'text-decoration:line-through;opacity:0.6;' : ''}">${esc(rem.title)}</div>
-                          <div class="list-row-meta" style="color:${dueColor};">${esc(dueLabel)} • ${esc(acc ? acc.name : '')}</div>
+                          <div class="list-row-meta" style="color:${dueColor};">${esc(dueLabel)}${acc ? ' • ' + esc(acc.name) : ''}</div>
                         </div>
                       </div>
                       <div class="list-row-right">
                         <span class="tabular" style="font-weight:700;font-size:14px;">${formatMoney(rem.amount, hide)}</span>
+                        <button type="button" class="mini-action-btn tap-spring" data-action="open-reminder-modal" data-id="${esc(rem.id)}" aria-label="Editar ${esc(rem.title)}" title="Editar pago fijo">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </button>
+                        <button type="button" class="mini-action-btn tap-spring" style="color:var(--danger);" data-action="delete-reminder" data-id="${esc(rem.id)}" aria-label="Eliminar ${esc(rem.title)}" title="Eliminar pago fijo">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
                       </div>
                     </div>
                   `;
@@ -2773,12 +3520,14 @@
           const visibleTxs = this.state.transactions.filter((t) => !t.isOpening).slice(0, 6);
           const recentTxHtml = visibleTxs.length === 0
             ? `<div class="empty-guide-card">
-                <p style="margin:0 0 10px;font-size:13.5px;color:var(--text-secondary);">Aún no hay movimientos. Usa un botón rápido arriba o registra tu primer movimiento.</p>
-                <button type="button" class="primary-pill-btn" data-action="open-tx-modal" data-type="expense">+ Registrar primer movimiento</button>
+                <p style="margin:0 0 10px;font-size:13.5px;color:var(--text-secondary);">Aún no hay movimientos registrados.</p>
+                <button type="button" class="primary-pill-btn tap-spring" data-action="open-tx-modal" data-type="expense">+ Registrar primer movimiento</button>
               </div>`
             : `<div class="grouped-list">${visibleTxs.map((tx) => this.renderTxRow(tx, false)).join('')}</div>`;
 
           return `
+            ${setupBanner}
+
             <section class="liquid-card" aria-label="Saldo Disponible Real">
               <div class="card-header-line">
                 <span class="card-eyebrow">Saldo Disponible Real (Libre Hoy)</span>
@@ -2823,7 +3572,9 @@
                 </div>
                 <div style="text-align:right;">
                   <div style="font-size:12px;color:var(--text-secondary);">Meta Diaria</div>
-                  <div class="tabular" style="font-size:15px;font-weight:700;">${formatMoney(m.dailyGoal, hide)}</div>
+                  ${m.dailyGoal > 0
+                    ? `<div class="tabular" style="font-size:15px;font-weight:700;">${formatMoney(m.dailyGoal, hide)}</div>`
+                    : `<button type="button" class="link-btn" style="min-height:24px;font-size:12.5px;" data-action="nav-tab" data-tab="settings">Definir meta</button>`}
                 </div>
               </div>
 
@@ -2832,7 +3583,7 @@
               </div>
 
               <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);">
-                <span class="tabular">${m.goalPct}% de meta</span>
+                <span class="tabular">${m.dailyGoal > 0 ? m.goalPct + '% de meta' : 'Sin meta configurada'}</span>
                 <span class="tabular">Ganancia Neta Hoy: <strong>${formatSignedMoney(m.todayNet, hide)}</strong></span>
               </div>
 
@@ -2847,18 +3598,18 @@
 
             <div class="section-head">
               <h2 class="section-title">Botones rápidos de 1 toque</h2>
-              <button type="button" class="link-btn" data-action="nav-tab" data-tab="settings">
-                <span>Personalizar</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
+              <button type="button" class="link-btn" data-action="open-qb-modal">+ Nuevo</button>
             </div>
-            <div class="quick-grid">${quickHtml}</div>
+            ${quickHtml}
 
             <div class="section-head">
               <h2 class="section-title">Cuentas y Bolsillos</h2>
-              <button type="button" class="link-btn" data-action="open-tx-modal" data-type="transfer">Transferir</button>
+              <div style="display:flex;gap:8px;">
+                <button type="button" class="link-btn" data-action="open-account-modal">+ Cuenta</button>
+                ${this.state.accounts.length >= 2 ? `<button type="button" class="link-btn" data-action="open-tx-modal" data-type="transfer">Transferir</button>` : ''}
+              </div>
             </div>
-            <div class="accounts-grid">${accountsHtml}</div>
+            ${accountsHtml}
 
             <div class="section-head">
               <h2 class="section-title">Pagos Fijos del Ciclo</h2>
@@ -2911,8 +3662,12 @@
               <div class="list-row-right">
                 <span class="tabular" style="font-weight:700;font-size:14px;color:${amountColor};">${amountStr}</span>
                 ${showActions ? `
-                  <button type="button" class="icon-circle-btn" style="width:34px;height:34px;min-width:34px;min-height:34px;" data-action="open-tx-modal" data-id="${esc(tx.id)}" aria-label="Editar">✎</button>
-                  <button type="button" class="icon-circle-btn" style="width:34px;height:34px;min-width:34px;min-height:34px;color:var(--danger);" data-action="delete-tx" data-id="${esc(tx.id)}" aria-label="Eliminar">✕</button>
+                  <button type="button" class="mini-action-btn tap-spring" data-action="open-tx-modal" data-id="${esc(tx.id)}" aria-label="Editar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </button>
+                  <button type="button" class="mini-action-btn tap-spring" style="color:var(--danger);" data-action="delete-tx" data-id="${esc(tx.id)}" aria-label="Eliminar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
                 ` : ''}
               </div>
             </div>
@@ -2961,8 +3716,8 @@
           if (list.length === 0) {
             return `
               <div class="empty-guide-card">
-                <p style="margin:0 0 10px;font-size:14px;color:var(--text-secondary);">No hay movimientos que coincidan con este filtro.</p>
-                <button type="button" class="primary-pill-btn" data-action="open-tx-modal" data-type="expense">+ Registrar movimiento</button>
+                <p style="margin:0 0 10px;font-size:14px;color:var(--text-secondary);">No hay movimientos registrados todavía.</p>
+                <button type="button" class="primary-pill-btn tap-spring" data-action="open-tx-modal" data-type="expense">+ Registrar movimiento</button>
               </div>
             `;
           }
@@ -2982,7 +3737,7 @@
           const projectsHtml = this.state.projects.length === 0
             ? `<div class="empty-guide-card">
                 <p style="margin:0 0 10px;font-size:13.5px;color:var(--text-secondary);">Crea huchas o proyectos para apartar dinero sin gastarlo por accidente.</p>
-                <button type="button" class="primary-pill-btn" data-action="open-project-modal">+ Crear primer proyecto</button>
+                <button type="button" class="primary-pill-btn tap-spring" data-action="open-project-modal">+ Crear primer proyecto</button>
               </div>`
             : this.state.projects.map((p) => {
                 const pct = p.target > 0 ? Math.min(100, Math.round((p.saved / p.target) * 100)) : 0;
@@ -3057,7 +3812,7 @@
               <h2 class="section-title">Presupuestos del Mes (Semáforo)</h2>
               <button type="button" class="link-btn" data-action="nav-tab" data-tab="settings">Configurar topes</button>
             </div>
-            ${budgetsHtml || '<div class="empty-guide-card"><p style="margin:0;font-size:13px;color:var(--text-secondary);">Asigna un tope mensual a cualquier categoría desde Ajustes.</p></div>'}
+            ${budgetsHtml || '<div class="empty-guide-card"><p style="margin:0;font-size:13px;color:var(--text-secondary);">Asigna un tope mensual a cualquier categoría desde Ajustes para activar el semáforo y las notificaciones automáticas.</p></div>'}
           `;
         },
 
@@ -3176,10 +3931,36 @@
 
         renderSettingsTab() {
           const s = this.state.settings;
+          const n = s.notifications;
+          const perm = this.getNotificationPermission();
+          const permLabel = perm === 'granted' && n.enabled
+            ? 'Activas'
+            : (perm === 'denied' ? 'Bloqueadas' : (perm === 'unsupported' ? 'Solo internas' : 'Desactivadas'));
+          const permClass = perm === 'granted' && n.enabled ? 'badge-positive' : (perm === 'denied' ? 'badge-danger' : 'badge-warning');
+
           const swatches = ['#007AFF', '#34C759', '#FF9500', '#FF2D55', '#30B0C7', '#1C1C1E'];
           const swatchesHtml = swatches.map((hex) =>
             `<button type="button" class="swatch-btn ${s.accentColor.toLowerCase() === hex.toLowerCase() ? 'active' : ''}" style="background:${hex};" data-action="set-accent" data-color="${hex}" aria-label="Color ${hex}"></button>`
           ).join('');
+
+          const remsHtml = this.state.reminders.length === 0
+            ? `<div class="empty-guide-card"><p style="margin:0;font-size:13px;color:var(--text-secondary);">Sin pagos fijos registrados. Pulsa <strong>+ Nuevo</strong> arriba para agregar uno.</p></div>`
+            : `<div class="grouped-list">
+                ${this.state.reminders.map((r) => `
+                  <div class="list-row">
+                    <div class="list-row-main">
+                      <div class="list-row-text">
+                        <div class="list-row-title">${esc(r.title)}</div>
+                        <div class="list-row-meta tabular">Día ${r.dueDay} • ${formatMoney(r.amount, s.privacyMode)} • Aviso ${r.notifyDaysBefore !== undefined ? r.notifyDaysBefore : 3}d antes</div>
+                      </div>
+                    </div>
+                    <div class="list-row-right">
+                      <button type="button" class="filter-pill tap-spring" data-action="open-reminder-modal" data-id="${esc(r.id)}">Editar</button>
+                      <button type="button" class="mini-action-btn tap-spring" style="color:var(--danger);" data-action="delete-reminder" data-id="${esc(r.id)}" aria-label="Eliminar">✕</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>`;
 
           const catsHtml = this.state.categories.map((c) => `
             <div class="list-row">
@@ -3191,54 +3972,141 @@
                 </div>
               </div>
               <div class="list-row-right">
-                <button type="button" class="filter-pill" data-action="open-category-modal" data-id="${esc(c.id)}">Editar</button>
-                <button type="button" class="icon-circle-btn" style="width:34px;height:34px;min-width:34px;min-height:34px;color:var(--danger);" data-action="delete-category" data-id="${esc(c.id)}" aria-label="Eliminar">✕</button>
+                <button type="button" class="filter-pill tap-spring" data-action="open-category-modal" data-id="${esc(c.id)}">Editar</button>
+                <button type="button" class="mini-action-btn tap-spring" style="color:var(--danger);" data-action="delete-category" data-id="${esc(c.id)}" aria-label="Eliminar">✕</button>
               </div>
             </div>
           `).join('');
 
-          const accsHtml = this.state.accounts.map((a) => `
-            <div class="list-row">
-              <div class="list-row-main">
-                <div class="squircle-icon" style="background:${hexToRgba(a.color, 0.14)};color:${escColor(a.color)};">${esc(a.name.slice(0, 2).toUpperCase())}</div>
-                <div class="list-row-text">
-                  <div class="list-row-title">${esc(a.name)}</div>
-                  <div class="list-row-meta tabular">${formatMoney(a.balance, s.privacyMode)}</div>
-                </div>
-              </div>
-              <div class="list-row-right">
-                <button type="button" class="filter-pill" data-action="open-account-modal" data-id="${esc(a.id)}">Editar</button>
-                <button type="button" class="icon-circle-btn" style="width:34px;height:34px;min-width:34px;min-height:34px;color:var(--danger);" data-action="delete-account" data-id="${esc(a.id)}" aria-label="Eliminar">✕</button>
-              </div>
-            </div>
-          `).join('');
+          const accsHtml = this.state.accounts.length === 0
+            ? `<div class="empty-guide-card"><p style="margin:0;font-size:13px;color:var(--text-secondary);">Aún no has creado cuentas.</p></div>`
+            : `<div class="grouped-list">
+                ${this.state.accounts.map((a) => `
+                  <div class="list-row">
+                    <div class="list-row-main">
+                      <div class="squircle-icon" style="background:${hexToRgba(a.color, 0.14)};color:${escColor(a.color)};">${esc(a.name.slice(0, 2).toUpperCase())}</div>
+                      <div class="list-row-text">
+                        <div class="list-row-title">${esc(a.name)}</div>
+                        <div class="list-row-meta tabular">${formatMoney(a.balance, s.privacyMode)}</div>
+                      </div>
+                    </div>
+                    <div class="list-row-right">
+                      <button type="button" class="filter-pill tap-spring" data-action="open-account-modal" data-id="${esc(a.id)}">Editar</button>
+                      <button type="button" class="mini-action-btn tap-spring" style="color:var(--danger);" data-action="delete-account" data-id="${esc(a.id)}" aria-label="Eliminar">✕</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>`;
 
-          const qbsHtml = this.state.quickButtons.map((q) => `
-            <div class="list-row">
-              <div class="list-row-main">
-                <div class="list-row-text">
-                  <div class="list-row-title">${esc(q.label)}</div>
-                  <div class="list-row-meta tabular">${q.type === 'income' ? 'Ingreso' : 'Gasto'} • ${formatMoney(q.amount, false)}</div>
-                </div>
-              </div>
-              <div class="list-row-right">
-                <button type="button" class="filter-pill" data-action="open-qb-modal" data-id="${esc(q.id)}">Editar</button>
-                <button type="button" class="icon-circle-btn" style="width:34px;height:34px;min-width:34px;min-height:34px;color:var(--danger);" data-action="delete-qb" data-id="${esc(q.id)}" aria-label="Eliminar">✕</button>
-              </div>
-            </div>
-          `).join('');
+          const qbsHtml = this.state.quickButtons.length === 0
+            ? `<div class="empty-guide-card"><p style="margin:0;font-size:13px;color:var(--text-secondary);">Aún no has creado botones rápidos.</p></div>`
+            : `<div class="grouped-list">
+                ${this.state.quickButtons.map((q) => `
+                  <div class="list-row">
+                    <div class="list-row-main">
+                      <div class="list-row-text">
+                        <div class="list-row-title">${esc(q.label)}</div>
+                        <div class="list-row-meta tabular">${q.type === 'income' ? 'Ingreso' : 'Gasto'} • ${formatMoney(q.amount, false)}</div>
+                      </div>
+                    </div>
+                    <div class="list-row-right">
+                      <button type="button" class="filter-pill tap-spring" data-action="open-qb-modal" data-id="${esc(q.id)}">Editar</button>
+                      <button type="button" class="mini-action-btn tap-spring" style="color:var(--danger);" data-action="delete-qb" data-id="${esc(q.id)}" aria-label="Eliminar">✕</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>`;
 
           return `
             <section class="surface-card">
-              <h2 class="section-title" style="margin-bottom:12px;">1. Perfil y Reglas Financieras</h2>
+              <div class="card-header-line">
+                <h2 class="section-title">1. Notificaciones al Teléfono</h2>
+                <span class="badge-pill ${permClass}">${esc(permLabel)}</span>
+              </div>
+              <p style="margin:4px 0 12px;font-size:12.5px;color:var(--text-secondary);">
+                Recibe avisos en la barra de tu teléfono sobre pagos fijos, topes de presupuesto, gastos hormiga, saldo bajo y meta diaria.
+              </p>
+
+              <div class="grouped-list" style="margin-bottom:12px;">
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Activar notificaciones nativas</div>
+                    <div class="list-row-meta">Permiso del navegador / PWA</div>
+                  </div>
+                  <button type="button" class="ios-switch ${perm === 'granted' && n.enabled ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="enabled" aria-label="Activar notificaciones"></button>
+                </div>
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Pagos fijos por vencer o vencidos</div>
+                    <div class="list-row-meta">Avisa según los días elegidos en cada pago</div>
+                  </div>
+                  <button type="button" class="ios-switch ${n.fixedDue ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="fixedDue" aria-label="Alertas pagos fijos"></button>
+                </div>
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Presupuestos mensuales (80% y 100%)</div>
+                    <div class="list-row-meta">Al acercarte o superar el tope de una categoría</div>
+                  </div>
+                  <button type="button" class="ios-switch ${n.budgetAlert ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="budgetAlert" aria-label="Alertas presupuesto"></button>
+                </div>
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Alerta de gastos hormiga</div>
+                    <div class="list-row-meta">Al acumular 3 o más gastos hormiga en el día</div>
+                  </div>
+                  <button type="button" class="ios-switch ${n.hormigaAlert ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="hormigaAlert" aria-label="Alerta gastos hormiga"></button>
+                </div>
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Saldo disponible bajo o negativo</div>
+                    <div class="list-row-meta">Protege tu liquidez real del mes</div>
+                  </div>
+                  <button type="button" class="ios-switch ${n.lowBalanceAlert ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="lowBalanceAlert" aria-label="Alerta saldo bajo"></button>
+                </div>
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Meta de ganancia diaria cumplida</div>
+                    <div class="list-row-meta">Aviso positivo al alcanzar el 100%</div>
+                  </div>
+                  <button type="button" class="ios-switch ${n.dailyGoalAlert ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="dailyGoalAlert" aria-label="Alerta meta diaria"></button>
+                </div>
+                <div class="list-row">
+                  <div class="list-row-text">
+                    <div class="list-row-title">Recordatorio diario de registro</div>
+                    <div class="list-row-meta">Si no has registrado movimientos hoy</div>
+                  </div>
+                  <button type="button" class="ios-switch ${n.dailyCheckin ? 'on' : ''}" data-action="toggle-notif-pref" data-pref="dailyCheckin" aria-label="Recordatorio diario"></button>
+                </div>
+              </div>
+
+              <form id="notifSettingsForm" style="margin-bottom:10px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                  <div class="form-group">
+                    <label class="form-label" for="setLowBalInput">Avisar saldo bajo (COP)</label>
+                    <input type="number" inputmode="numeric" min="0" class="input-field tabular" id="setLowBalInput" value="${esc(n.lowBalanceThreshold)}" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="setCheckinHourInput">Hora recordatorio diario</label>
+                    <input type="time" class="input-field tabular" id="setCheckinHourInput" value="${esc(n.dailyCheckinHour || '20:00')}" />
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                  <button type="submit" class="btn-block-primary tap-spring" style="min-height:42px;font-size:13.5px;">Guardar alertas</button>
+                  <button type="button" class="btn-block-secondary tap-spring" style="min-height:42px;font-size:13.5px;" data-action="test-notification">Probar notificación</button>
+                </div>
+              </form>
+            </section>
+
+            <section class="surface-card">
+              <h2 class="section-title" style="margin-bottom:12px;">2. Perfil y Reglas Financieras</h2>
               <form id="profileSettingsForm">
                 <div class="form-group">
-                  <label class="form-label" for="setUserNameInput">Tu nombre de usuario</label>
-                  <input type="text" maxlength="30" class="input-field" id="setUserNameInput" value="${esc(s.userName)}" required />
+                  <label class="form-label" for="setUserNameInput">Tu nombre (opcional)</label>
+                  <input type="text" maxlength="30" class="input-field" id="setUserNameInput" value="${esc(s.userName)}" placeholder="Ej. Carlos, Laura..." />
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="setDailyGoalInput">Meta de ganancia diaria (COP)</label>
-                  <input type="number" inputmode="numeric" min="1000" class="input-field tabular" id="setDailyGoalInput" value="${esc(s.dailyGoal)}" required />
+                  <label class="form-label" for="setDailyGoalInput">Meta de ganancia diaria (COP, 0 = desactivada)</label>
+                  <input type="number" inputmode="numeric" min="0" class="input-field tabular" id="setDailyGoalInput" value="${esc(s.dailyGoal)}" />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="setCycleDayInput">Día de corte mensual de pagos fijos (1 - 28)</label>
@@ -3249,7 +4117,7 @@
             </section>
 
             <section class="surface-card">
-              <h2 class="section-title" style="margin-bottom:12px;">2. Apariencia y Apple Liquid Glass</h2>
+              <h2 class="section-title" style="margin-bottom:12px;">3. Apariencia y Apple Liquid Glass</h2>
               <div class="form-group">
                 <label class="form-label">Tema de superficie</label>
                 <div class="segmented-row" style="grid-template-columns:repeat(2,1fr);margin-bottom:0;">
@@ -3277,26 +4145,32 @@
             </section>
 
             <div class="section-head">
-              <h2 class="section-title">3. Categorías y Topes</h2>
+              <h2 class="section-title">4. Pagos Fijos del Ciclo</h2>
+              <button type="button" class="link-btn" data-action="open-reminder-modal">+ Nuevo</button>
+            </div>
+            ${remsHtml}
+
+            <div class="section-head">
+              <h2 class="section-title">5. Categorías y Topes</h2>
               <button type="button" class="link-btn" data-action="open-category-modal">+ Nueva</button>
             </div>
             <div class="grouped-list">${catsHtml}</div>
 
             <div class="section-head">
-              <h2 class="section-title">4. Cuentas y Bolsillos</h2>
+              <h2 class="section-title">6. Cuentas y Bolsillos</h2>
               <button type="button" class="link-btn" data-action="open-account-modal">+ Nueva</button>
             </div>
-            <div class="grouped-list">${accsHtml}</div>
+            ${accsHtml}
 
             <div class="section-head">
-              <h2 class="section-title">5. Botones Rápidos 1 Toque</h2>
+              <h2 class="section-title">7. Botones Rápidos 1 Toque</h2>
               <button type="button" class="link-btn" data-action="open-qb-modal">+ Nuevo</button>
             </div>
-            <div class="grouped-list">${qbsHtml}</div>
+            ${qbsHtml}
 
             <section class="surface-card">
               <div class="card-header-line">
-                <h2 class="section-title">6. Datos, Respaldo y Modo Offline</h2>
+                <h2 class="section-title">8. Datos, Respaldo y Modo Offline</h2>
                 <span class="badge-pill badge-positive">${esc(this.swStatus)}</span>
               </div>
               <p style="margin:4px 0 12px;font-size:12.5px;color:var(--text-secondary);">
@@ -3313,7 +4187,7 @@
               <input type="file" id="importJsonFileInput" accept="application/json,.json" style="display:none;" />
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <button type="button" class="btn-block-secondary tap-spring" data-action="run-audit">Verificar cuadre</button>
-                <button type="button" class="btn-block-secondary tap-spring" style="color:var(--danger);" data-action="reset-demo">Reiniciar datos</button>
+                <button type="button" class="btn-block-secondary tap-spring" style="color:var(--danger);" data-action="reset-all-clean">Dejar en blanco</button>
               </div>
             </section>
           `;
