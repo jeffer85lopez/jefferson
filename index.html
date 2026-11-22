@@ -51,6 +51,8 @@
 
       --accent: #007AFF;
       --accent-soft: rgba(0, 122, 255, 0.12);
+      --accent-text: #007AFF;
+      --accent-glow: rgba(0, 122, 255, 0.42);
       --accent-contrast: #FFFFFF;
       --positive: #28A745;
       --positive-soft: rgba(52, 199, 89, 0.14);
@@ -333,7 +335,7 @@
       align-items: center;
       gap: 5px;
       white-space: nowrap;
-      box-shadow: 0 4px 14px -4px rgba(0, 122, 255, 0.45);
+      box-shadow: 0 4px 14px -4px var(--accent-glow);
     }
 
     .app-main {
@@ -372,7 +374,7 @@
       min-height: 32px;
       border-radius: var(--radius-full);
       background: var(--accent-soft);
-      color: var(--accent);
+      color: var(--accent-text);
       font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
@@ -518,7 +520,7 @@
     .link-btn {
       font-size: 13px;
       font-weight: 600;
-      color: var(--accent);
+      color: var(--accent-text);
       display: inline-flex;
       align-items: center;
       gap: 3px;
@@ -811,7 +813,7 @@
 
     .nav-tab-btn.active {
       background: var(--accent-soft);
-      color: var(--accent);
+      color: var(--accent-text);
     }
 
     .filter-scroll {
@@ -1022,7 +1024,7 @@
     }
 
     .toast-undo-btn {
-      color: #4DA3FF;
+      color: var(--accent-text);
       font-weight: 700;
       font-size: 13px;
       padding: 4px 8px;
@@ -1587,15 +1589,34 @@
         return (num >= 0 ? '+$' : '-$') + formatted;
       }
 
-      function hexToRgba(hex, alpha) {
+      function parseHexRgb(hex) {
         const clean = escColor(hex);
-        if (!clean.startsWith('#')) return `rgba(0, 122, 255, ${alpha})`;
+        if (!clean.startsWith('#')) return { r: 0, g: 122, b: 255 };
         let h = clean.slice(1);
         if (h.length === 3) h = h.split('').map(c => c + c).join('');
-        const r = parseInt(h.slice(0, 2), 16) || 0;
-        const g = parseInt(h.slice(2, 4), 16) || 122;
-        const b = parseInt(h.slice(4, 6), 16) || 255;
+        return {
+          r: parseInt(h.slice(0, 2), 16) || 0,
+          g: parseInt(h.slice(2, 4), 16) || 0,
+          b: parseInt(h.slice(4, 6), 16) || 0
+        };
+      }
+
+      function hexToRgba(hex, alpha) {
+        const { r, g, b } = parseHexRgb(hex);
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      function getReadableAccentText(hex, isDark) {
+        const { r, g, b } = parseHexRgb(hex);
+        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        if (isDark && lum < 0.55) {
+          const factor = 0.42;
+          const lr = Math.min(255, Math.round(r + (255 - r) * factor));
+          const lg = Math.min(255, Math.round(g + (255 - g) * factor));
+          const lb = Math.min(255, Math.round(b + (255 - b) * factor));
+          return `rgb(${lr}, ${lg}, ${lb})`;
+        }
+        return escColor(hex);
       }
 
       function createDefaultNotificationPrefs() {
@@ -2208,18 +2229,24 @@
         applyThemeAndTokens() {
           const root = document.documentElement;
           const s = this.state.settings;
-          if (s.theme === 'dark') {
+          const isDark = s.theme === 'dark';
+          if (isDark) {
             root.classList.add('dark');
           } else {
             root.classList.remove('dark');
           }
+          root.style.colorScheme = isDark ? 'dark' : 'light';
           root.setAttribute('data-glass', s.glassIntensity || 'balanced');
           const accent = escColor(s.accentColor || '#007AFF');
           root.style.setProperty('--accent', accent);
-          root.style.setProperty('--accent-soft', hexToRgba(accent, s.theme === 'dark' ? 0.22 : 0.12));
+          root.style.setProperty('--accent-soft', hexToRgba(accent, isDark ? 0.24 : 0.12));
+          root.style.setProperty('--accent-text', getReadableAccentText(accent, isDark));
+          root.style.setProperty('--accent-glow', hexToRgba(accent, 0.42));
 
           const metaTheme = document.getElementById('metaThemeColor');
-          if (metaTheme) metaTheme.setAttribute('content', s.theme === 'dark' ? '#000000' : '#F2F2F7');
+          if (metaTheme) metaTheme.setAttribute('content', isDark ? '#000000' : '#F2F2F7');
+          const appleBar = document.getElementById('appleStatusBar');
+          if (appleBar) appleBar.setAttribute('content', isDark ? 'black-translucent' : 'default');
         },
 
         registerServiceWorker() {
